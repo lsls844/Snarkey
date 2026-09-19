@@ -224,6 +224,11 @@
   .foot-t{font-size:9.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--amber);margin-bottom:9px}
   .foot p{margin:0;font-size:11px;color:var(--mid);line-height:1.75}
 
+  .pend-hd{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);margin:18px 0 8px}
+  .pend{display:flex;justify-content:space-between;gap:12px;padding:8px 10px;margin-bottom:6px;
+    border:1px solid rgba(244,183,40,.3);background:rgba(244,183,40,.06);font-size:11px;color:var(--ink-2, #9DABC6)}
+  .pend span{color:var(--mid)}
+  .pend b{color:var(--amber);font-weight:400}
   .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(12px);
     background:var(--accent);color:#000;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
     padding:12px 22px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:80;
@@ -386,7 +391,7 @@
         <div class="cell"><div class="c-k">Backing<br>ratio</div><div class="c-v" id="vl-ratio">100%</div><div class="c-s">1 key = 1% of a real NFT</div></div>
       </div>
       <div class="grid g3" style="border-top:0">
-        <div class="cell"><div class="c-k">USDC float<br>for payouts</div><div class="c-v pale" id="vl-float">$1,200</div><div class="c-s">covers instant sells</div></div>
+        <div class="cell"><div class="c-k">Payouts<br>pending</div><div class="c-v pale" id="vl-float">$0</div><div class="c-s">awaiting manual send</div></div>
         <div class="cell"><div class="c-k">Key value<br>outstanding</div><div class="c-v pale" id="vl-out">$4,236</div><div class="c-s" id="vl-out-s">318 keys at floor</div></div>
         <div class="cell"><div class="c-k">Vault wallet</div><div class="c-v pale" style="font-size:13px;line-height:1.7" id="vl-wallet">Set at launch</div><div class="c-s">where key payments arrive</div></div>
       </div>
@@ -551,7 +556,7 @@
             <dl class="rows" style="padding:0 0 4px">
               <div class="row"><dt>Average cost</dt><dd id="p-avg"></dd></div>
               <div class="row"><dt>Unrealised</dt><dd id="p-pnl"></dd></div>
-              <div class="row"><dt>Payout</dt><dd id="p-instant">Instant</dd></div>
+              <div class="row"><dt>Pending payout</dt><dd id="p-instant">None</dd></div>
             </dl>
             <div class="rd">
               <div class="rd-hd"><span>Sell keys</span><span>Paid in USDC to <b id="sell-to">your wallet</b></span></div>
@@ -565,7 +570,8 @@
                 <div class="row"><dt>You receive</dt><dd id="sell-net">$0.00</dd></div>
                 <div class="row"><dt>Settlement</dt><dd id="sell-eta">&mdash;</dd></div>
               </dl>
-              <div class="cta"><button class="btn" id="sell-btn" type="button" disabled>Sell keys</button></div>
+              <div class="cta"><button class="btn" id="sell-btn" type="button" disabled>Request payout</button></div>
+              <div id="pending-list"></div>
             </div>
 
             <div class="rd">
@@ -591,26 +597,25 @@
       <p class="sec-k">Selling your keys</p>
       <div class="steps" style="grid-template-columns:repeat(3,1fr)">
         <div class="step">
-          <div class="step-n">Step 1</div><h3>Say how many</h3>
-          <p>Enter the number of keys. They are valued at the live floor, minus a 2% exit fee.
-             Nothing is locked until you confirm.</p>
+          <div class="step-n">Step 1</div><h3>Request a payout</h3>
+          <p>Enter how many keys. They are valued at the live floor, minus a 2% exit fee.
+             You see the exact USDC figure before you confirm.</p>
         </div>
         <div class="step">
-          <div class="step-n">Step 2</div><h3>We pay from the float</h3>
-          <p>A USDC buffer sits next to the NFTs so payouts do not wait on anything. USDC lands
-             in the wallet you connected, usually within minutes.</p>
+          <div class="step-n">Step 2</div><h3>It goes pending</h3>
+          <p>The request is logged against the wallet you connected and shows as pending
+             on this page. Your key balance comes down straight away.</p>
         </div>
         <div class="step">
-          <div class="step-n">Step 3</div><h3>The float refills</h3>
-          <p>When the buffer runs low we sell a piece on Zilkroad to top it up. If a payout ever
-             exceeds the buffer it queues and settles in three to seven days &mdash; and the site
-             says so before you confirm, not after.</p>
+          <div class="step-n">Step 3</div><h3>We send the USDC</h3>
+          <p>Every payout is reviewed and sent by hand to the wallet that requested it.
+             Nothing is automated, and nothing moves without a person approving it.</p>
         </div>
       </div>
       <div class="block" style="margin-top:18px">
         <div class="block-hd"><span class="block-t">Payout capacity</span><span class="block-n">Published, not promised</span></div>
         <div class="block-bd">
-          <div class="meter-t"><span>USDC float available for instant payout</span><span><b id="fl-amt">$1,200</b> / <span id="fl-out">$4,236</span> outstanding</span></div>
+          <div class="meter-t"><span>Payouts awaiting send</span><span><b id="fl-amt">$0</b> / <span id="fl-out">$0</span> key value outstanding</span></div>
           <div class="bar"><i id="fl-bar" style="width:28%"></i></div>
           <p class="note">
             The float is what makes instant payouts possible, and it is the honest limit on them.
@@ -742,7 +747,19 @@
   var VAULT = [{id:6849,cost:.95,src:"k"},{id:361,cost:1,src:"f"},{id:1986,cost:.9,src:"k"},
                {id:2328,cost:1.12,src:"k"},{id:3026,cost:1.05,src:"f"}];
 
-  var S = { per: 100, nfts: 5, sold: 318, mine: 0, avg: 0, addr: null, float: 1200 };
+  var S = { per: 100, nfts: 5, sold: 318, mine: 0, avg: 0, addr: null };
+
+  /* Sell requests awaiting manual payment. Kept per-visitor so they can see
+     their own; the authoritative copy is whatever /api/sell recorded. */
+  var PENDING = [];
+  function loadPending() {
+    try { PENDING = JSON.parse(localStorage.getItem("pending_" + (S.addr || "")) || "[]"); }
+    catch (e) { PENDING = []; }
+  }
+  function savePending() {
+    try { localStorage.setItem("pending_" + (S.addr || ""), JSON.stringify(PENDING)); } catch (e) {}
+  }
+  function pendingTotal() { return PENDING.reduce(function (a, r) { return a + r.usd; }, 0); }
 
   /* ── 5×5 block font ── */
   var FONT = {
@@ -821,7 +838,7 @@
     $("pos-addr").textContent = a ? short(a) : "Not connected";
     $("pos-on").hidden = !a;
     $("pos-off").hidden = !!a;
-    if (a) renderPos();
+    if (a) { loadPending(); renderPos(); }
   }
   async function connect() {
     var p = window.ethereum;
@@ -944,13 +961,13 @@
       : "Supply is hard-capped at 100 keys per NFT in the vault. It rises only when the vault buys another piece.";
 
     var outstanding = S.sold * keyPrice();
-    $("vl-float").textContent = usd(S.float, 0);
+    $("vl-float").textContent = usd(pendingTotal(), 0);
     $("vl-out").textContent = usd(outstanding, 0);
     $("vl-out-s").textContent = num(S.sold) + " keys at floor";
     $("vl-wallet").textContent = VAULT_WALLET ? short(VAULT_WALLET) : "Set at launch";
-    $("fl-amt").textContent = usd(S.float, 0);
+    $("fl-amt").textContent = usd(pendingTotal(), 0);
     $("fl-out").textContent = usd(outstanding, 0);
-    $("fl-bar").style.width = Math.min(100, outstanding ? S.float / outstanding * 100 : 100).toFixed(1) + "%";
+    $("fl-bar").style.width = Math.min(100, outstanding ? pendingTotal() / outstanding * 100 : 0).toFixed(1) + "%";
 
     $("o-art").innerHTML = art;
     $("vl-art").innerHTML = art;
@@ -994,9 +1011,16 @@
     $("redeem-btn").disabled = need > 0;
     $("sell-to").textContent = short(S.addr);
     $("sell-in").max = S.mine;
+    $("pending-list").innerHTML = PENDING.length
+      ? '<div class="pend-hd">Awaiting payment</div>' + PENDING.map(function (r) {
+          return '<div class="pend"><span>' + num(r.keys) + " keys · " + r.ref +
+                 '</span><b>' + usd(r.usd) + "</b></div>";
+        }).join("")
+      : "";
+    var pend = pendingTotal();
     var inst = $("p-instant");
-    inst.textContent = val <= S.float ? "Instant" : "Queued · 3–7 days";
-    inst.className = val <= S.float ? "up" : "warn";
+    inst.textContent = pend > 0 ? usd(pend) + " · pending" : "None";
+    inst.className = pend > 0 ? "warn" : "";
     sellQuote();
   }
 
@@ -1053,7 +1077,7 @@
   });
   function credit(k, cost) {
     S.avg = (S.mine * S.avg + cost) / (S.mine + k);
-    S.mine += k; S.sold += k; S.float += cost;
+    S.mine += k; S.sold += k;
     renderAll();
   }
 
@@ -1093,29 +1117,52 @@
   function sellQuote() {
     var k = Math.min(Math.max(0, Math.floor(parseFloat($("sell-in").value) || 0)), S.mine);
     var gross = k * keyPrice(), fee = gross * EXIT_FEE, net = gross - fee;
-    var instant = net <= S.float;
     $("sell-gross").textContent = usd(gross);
     $("sell-fee").textContent = usd(fee);
     $("sell-net").textContent = usd(net);
     var eta = $("sell-eta");
-    eta.textContent = k < 1 ? "—" : instant ? "Instant · paid from the float" : "3–7 days · exceeds the float";
-    eta.className = k < 1 ? "" : instant ? "up" : "warn";
+    eta.textContent = k < 1 ? "—" : "USDC sent to your wallet once reviewed";
+    eta.className = "";
     var b = $("sell-btn");
     b.disabled = k < 1;
-    b.textContent = k < 1 ? "Sell keys" : "Sell " + num(k) + (k === 1 ? " key" : " keys") + " · " + usd(net);
-    return { k: k, net: net, instant: instant };
+    b.textContent = k < 1 ? "Request payout" : "Request " + usd(net) + " for " + num(k) + (k === 1 ? " key" : " keys");
+    return { k: k, gross: gross, fee: fee, net: net };
   }
 
-  $("sell-btn").addEventListener("click", function () {
-    var q = sellQuote(); if (q.k < 1) return;
+  $("sell-btn").addEventListener("click", async function () {
+    var q = sellQuote(); if (q.k < 1 || !S.addr) return;
+    var btn = $("sell-btn"), was = btn.textContent;
+    btn.disabled = true; btn.textContent = "Submitting…";
+
+    var req = {
+      address: S.addr, keys: q.k,
+      keyPrice: +keyPrice().toFixed(4),
+      gross: +q.gross.toFixed(2), fee: +q.fee.toFixed(2), usd: +q.net.toFixed(2),
+      floorZec: MKT.floorZec, zecUsd: MKT.zecUsd,
+      at: new Date().toISOString()
+    };
+
+    try {
+      var r = await fetch((API_BASE || "/api") + "/sell", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(req)
+      });
+      var out = await r.json();
+      if (!r.ok || !out.ok) throw new Error(out.error || "rejected");
+      req.ref = out.ref;
+    } catch (e) {
+      btn.disabled = false; btn.textContent = was;
+      toast("Could not submit — try again", true);
+      return;
+    }
+
     S.mine -= q.k; S.sold -= q.k;
     if (S.mine === 0) S.avg = 0;
-    if (q.instant) S.float -= q.net;
+    PENDING.push(req); savePending();
     $("sell-in").value = 0;
     renderAll();
-    toast(q.instant
-      ? "Sent " + usd(q.net) + " USDC to " + short(S.addr)
-      : "Queued " + usd(q.net) + " — settles in 3–7 days");
+    toast("Payout pending · " + usd(q.net) + " to " + short(S.addr));
   });
   $("sell-in").addEventListener("input", sellQuote);
   $("wallet-btn").addEventListener("click", function () { S.addr ? disconnect() : connect(); });
@@ -1173,10 +1220,7 @@
   route();
   loadLive();
   setInterval(loadLive, 30000);
-  if (window.ethereum && window.ethereum.request) {
-    window.ethereum.request({ method: "eth_accounts" }).then(function (a) {
-      if (a && a.length) setWallet(a[0]);
-    }).catch(function () {});
-  }
+  /* Deliberately no wallet call on page load — nothing touches the wallet
+     until the visitor presses Connect or Buy. */
 })();
 </script>

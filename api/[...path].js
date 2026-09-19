@@ -40,10 +40,17 @@ const BANDS = [
 
 export default async function handler(request) {
   if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors() });
-  if (request.method !== "GET") return json({ error: "method_not_allowed" }, 405);
 
   const url = new URL(request.url);
   const path = url.pathname.replace(/^\/+/, "").replace(/^api\/?/, "").replace(/\/+$/, "");
+
+  if (path === "sell") {
+    if (request.method !== "POST") return json({ error: "use_post" }, 405);
+    try { return await handleSell(request); }
+    catch (err) { return json({ error: "sell_failed", detail: String(err?.message || err) }, 500); }
+  }
+
+  if (request.method !== "GET") return json({ error: "method_not_allowed" }, 405);
 
   try {
     if (path === "" || path === "health") {
@@ -187,4 +194,63 @@ function median(sorted) {
 function round(n, d) {
   const f = Math.pow(10, d);
   return Math.round(n * f) / f;
+}
+
+
+/* ────────────────────────── sell requests ──────────────────────────
+ * A visitor asking to cash keys out. Nothing here moves money — it
+ * records the request and pings you, and you send the USDC by hand.
+ *
+ * Every request lands in the Vercel logs (Project → Logs), so this
+ * works with no setup at all. Set SELL_WEBHOOK in Vercel's environment
+ * variables to a Discord or Slack webhook URL and you get pinged too.
+ */
+async function handleSell(request) {
+  const body = await request.json().catch(() => null);
+  if (!body) return json({ error: "bad_json" }, 400);
+
+  const address = String(body.address || "");
+  const keys = Number(body.keys);
+  const usd = Number(body.usd);
+
+  if (!/^0x[a-fA-F0-9]{40}$/.test(address)) return json({ error: "bad_address" }, 400);
+  if (!Number.isInteger(keys) || keys < 1) return json({ error: "bad_keys" }, 400);
+  if (!Number.isFinite(usd) || usd <= 0) return json({ error: "bad_amount" }, 400);
+
+  const ref = "PO-" + Date.now().toString(36).toUpperCase().slice(-6);
+  const record = {
+    ref,
+    address,
+    keys,
+    keyPrice: Number(body.keyPrice) || null,
+    gross: Number(body.gross) || null,
+    fee: Number(body.fee) || null,
+    payoutUsd: usd,
+    floorZec: Number(body.floorZec) || null,
+    zecUsd: Number(body.zecUsd) || null,
+    at: new Date().toISOString(),
+  };
+
+  // Shows up in Vercel → your project → Logs
+  console.log("SELL_REQUEST " + JSON.stringify(record));
+
+  const hook = process.env.SELL_WEBHOOK;
+  if (hook) {
+    const text =
+      "**Payout requested** `" + ref + "`\n" +
+      "Send **$" + usd.toFixed(2) + " USDC** to `" + address + "`\n" +
+      keys + " keys @ $" + (record.keyPrice ?? 0).toFixed(2) +
+      " · floor " + record.floorZec + " ZEC";
+    try {
+      await fetch(hook, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ content: text, text }), // Discord uses content, Slack uses text
+      });
+    } catch (e) {
+      console.error("WEBHOOK_FAILED " + String(e?.message || e));
+    }
+  }
+
+  return json({ ok: true, ref, payoutUsd: usd, address });
 }
