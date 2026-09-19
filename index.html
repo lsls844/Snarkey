@@ -1,0 +1,1182 @@
+<title>ZKEYSNARKS Key Vault</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --bg:#000;
+    --ink:#C8FFDC;
+    --accent:#5DFF8F;
+    --bright:#86FFB0;
+    --mid:#4F9E70;
+    --dim:#3F9462;
+    --amber:#F4B728;
+    --red:#FF6B6B;
+    --line:rgba(63,148,98,.30);
+    --line-hi:rgba(93,255,143,.55);
+    --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:var(--mono);font-size:13px;line-height:1.75;
+    -webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums;
+    overflow-x:hidden;
+  }
+  a{color:inherit}
+  .wrap{max-width:1180px;margin:0 auto;padding-inline:22px;padding-block:0 90px}
+
+  /* ── chrome ── */
+  .top{border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);background:#000;z-index:50}
+  .top-a{max-width:1180px;margin:0 auto;padding:18px 22px 14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .mark{font-size:15px;letter-spacing:.24em;font-weight:500;color:var(--ink)}
+  .tagword{font-size:10px;letter-spacing:.14em;color:var(--mid)}
+  .spacer{margin-left:auto}
+  .top-b{max-width:1180px;margin:0 auto;padding:0 22px 13px;display:flex;gap:26px;flex-wrap:wrap}
+  .top-b a{
+    font-size:11px;letter-spacing:.17em;text-transform:uppercase;color:var(--mid);
+    text-decoration:none;transition:color .15s;
+  }
+  .top-b a:hover{color:var(--ink)}
+  .top-b a.on{color:var(--accent)}
+  .top-b a:focus-visible{outline:1px solid var(--accent);outline-offset:3px}
+
+  .btn{
+    font-family:var(--mono);font-size:11px;letter-spacing:.17em;text-transform:uppercase;
+    padding:9px 17px;border:1px solid var(--line-hi);background:transparent;color:var(--ink);
+    cursor:pointer;transition:background .15s,color .15s,border-color .15s;
+    display:inline-flex;align-items:center;gap:8px;text-decoration:none;
+  }
+  .btn:hover{background:var(--accent);color:#000;border-color:var(--accent)}
+  .btn:focus-visible{outline:1px solid var(--accent);outline-offset:3px}
+  .btn:disabled{border-color:var(--line);color:var(--mid);cursor:not-allowed;background:transparent}
+  .btn-solid{background:var(--accent);color:#000;border-color:var(--accent);font-weight:500}
+  .btn-solid:hover{background:var(--bright);border-color:var(--bright)}
+  .btn-solid:disabled{background:transparent;color:var(--mid);border-color:var(--line)}
+  .led{width:6px;height:6px;border-radius:50%;background:var(--accent);flex:none}
+  .led.off{background:var(--mid)}
+
+  /* ── banner ── */
+  .banner{
+    font-size:clamp(4.6px,1.42vw,12.5px);line-height:1.02;letter-spacing:0;
+    color:#FFFFFF;margin:0;white-space:pre;overflow-x:auto;
+    font-weight:400;
+  }
+  .banner .hl,.mark .hl{color:var(--accent)}
+  .mark{color:#FFFFFF}
+  .live{
+    font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+    padding:2px 8px;border:1px solid var(--line);color:var(--mid);white-space:nowrap;
+  }
+  .live.on{color:var(--accent);border-color:rgba(93,255,143,.45)}
+  .live.err{color:var(--amber);border-color:rgba(244,183,40,.45)}
+  .hero{padding-block:54px 0}
+  .hero-lead{
+    font-size:clamp(16px,2.3vw,23px);line-height:1.5;color:var(--ink);
+    margin:38px 0 0;max-width:34ch;
+  }
+  .hero-body{color:var(--mid);max-width:74ch;margin:22px 0 0}
+  .hero-body b{color:var(--ink);font-weight:400}
+  .hero-cta{display:flex;gap:11px;flex-wrap:wrap;margin-top:34px}
+
+  /* ── sections ── */
+  section{margin-top:58px}
+  .sec-k{
+    font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mid);
+    margin:0 0 20px;padding-bottom:14px;border-bottom:1px solid var(--line);
+  }
+  h2{font-size:clamp(19px,2.6vw,26px);font-weight:400;letter-spacing:.02em;margin:0 0 14px;color:var(--ink)}
+  h3{font-size:13px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;margin:0 0 9px;color:var(--ink)}
+  .page-hd{padding-block:46px 0;margin-bottom:40px}
+  .page-hd p{color:var(--mid);max-width:76ch;margin:0}
+
+  /* ── stat grid ── */
+  .grid{display:grid;border-top:1px solid var(--line)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .cell{padding:22px 24px 26px;border-bottom:1px solid var(--line);border-left:1px solid var(--line)}
+  .cell:first-child,.g4 .cell:nth-child(4n+1),.g3 .cell:nth-child(3n+1){border-left:0}
+  .c-k{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--mid);line-height:1.5;margin-bottom:14px;min-height:2.9em}
+  .c-v{font-size:clamp(22px,3vw,30px);line-height:1;color:var(--accent);font-weight:400}
+  .c-v.pale{color:var(--ink)}
+  .c-s{font-size:10.5px;color:var(--mid);margin-top:10px;letter-spacing:.04em}
+  .up{color:var(--accent)}.down{color:var(--red)}.warn{color:var(--amber)}
+
+  /* ── blocks ── */
+  .block{border:1px solid var(--line)}
+  .block-hd{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+  .block-t{font-size:11px;letter-spacing:.17em;text-transform:uppercase;color:var(--ink)}
+  .block-n{font-size:10.5px;color:var(--mid);margin-left:auto;letter-spacing:.04em}
+  .block-bd{padding:22px 20px}
+  .cols{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:start}
+  .cols2{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+
+  /* ── form ── */
+  .lbl{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--mid);display:block;margin-bottom:11px}
+  .inp{display:flex;border:1px solid var(--line-hi)}
+  .inp:focus-within{border-color:var(--accent)}
+  .inp input{
+    flex:1;min-width:0;background:transparent;border:0;color:var(--accent);
+    font-family:var(--mono);font-size:26px;padding:14px 16px;font-variant-numeric:tabular-nums;
+  }
+  .inp input:focus{outline:none}
+  .inp-u{display:flex;align-items:center;padding:0 17px;border-left:1px solid var(--line);font-size:11px;letter-spacing:.15em;color:var(--mid)}
+  .quick{display:flex;gap:7px;margin-top:11px;flex-wrap:wrap}
+  .quick button{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;padding:6px 12px;border:1px solid var(--line);background:transparent;color:var(--mid);cursor:pointer;transition:all .15s}
+  .quick button:hover{border-color:var(--accent);color:var(--accent)}
+  .quick button:focus-visible{outline:1px solid var(--accent);outline-offset:2px}
+  .to{text-align:center;color:var(--mid);margin:17px 0;font-size:13px}
+
+  .out{border:1px solid var(--line-hi)}
+  .out-top{padding:19px 20px 16px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .out-n{font-size:38px;line-height:1;color:var(--accent)}
+  .out-u{font-size:11px;letter-spacing:.17em;text-transform:uppercase;color:var(--mid)}
+  .out-eq{margin-left:auto;font-size:11px;color:var(--mid);text-align:right}
+  .out-eq b{color:var(--ink);font-weight:400}
+  dl{margin:0}
+  .rows{padding:8px 20px 15px}
+  .row{display:flex;justify-content:space-between;gap:14px;padding:6px 0;font-size:11.5px}
+  .row dt{color:var(--mid)}
+  .row dd{margin:0;color:var(--ink)}
+
+  .meter{margin-top:24px}
+  .meter-t{display:flex;justify-content:space-between;font-size:10.5px;color:var(--mid);margin-bottom:9px;letter-spacing:.06em}
+  .meter-t b{color:var(--accent);font-weight:400}
+  .bar{height:14px;border:1px solid var(--line);position:relative;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--accent);transition:width .4s}
+  .bar i.dim{background:var(--mid)}
+  .note{font-size:10.5px;color:var(--mid);margin:11px 0 0;line-height:1.7}
+  .cta{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+  .cta .btn{flex:1;min-width:140px;justify-content:center}
+
+  /* ── position ── */
+  .pos-num{font-size:48px;line-height:1;color:var(--accent)}
+  .pos-line{display:flex;align-items:flex-end;gap:13px;margin-bottom:9px}
+  .pos-u{font-size:10px;letter-spacing:.17em;text-transform:uppercase;color:var(--mid);padding-bottom:8px}
+  .pos-sub{font-size:11px;color:var(--mid);margin-bottom:18px}
+  .pos-sub b{color:var(--ink);font-weight:400}
+  .empty{padding:46px 20px;text-align:center}
+  .empty p{color:var(--mid);margin:0 0 22px;line-height:1.85;font-size:11.5px}
+  .rd{border-top:1px solid var(--line);margin-top:20px;padding-top:20px}
+  .rd-hd{display:flex;justify-content:space-between;gap:12px;margin-bottom:11px;flex-wrap:wrap;font-size:11px}
+  .rd-hd span:first-child{letter-spacing:.14em;text-transform:uppercase;color:var(--ink)}
+  .rd-hd span:last-child{color:var(--mid)}
+  .rd-hd b{color:var(--accent);font-weight:400}
+
+  /* ── art grid ── */
+  .art-grid{display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--line)}
+  .art{padding:20px 14px;text-align:center;border-left:1px solid var(--line)}
+  .art:nth-child(5n+1){border-left:0}
+  .art img{width:84px;height:84px;image-rendering:pixelated;display:block;margin:0 auto 13px;border:1px solid var(--line)}
+  .art-id{font-size:11.5px;color:var(--ink)}
+  .art-s{font-size:10px;color:var(--mid);margin-top:4px}
+  .chip{font-size:9px;letter-spacing:.12em;text-transform:uppercase;padding:2px 7px;border:1px solid;display:inline-block;margin-top:9px}
+  .chip-k{color:var(--accent);border-color:rgba(93,255,143,.4)}
+  .chip-f{color:var(--amber);border-color:rgba(244,183,40,.4)}
+
+  /* ── depth ── */
+  .depth{display:flex;flex-direction:column;gap:8px}
+  .drow{display:grid;grid-template-columns:86px 1fr 46px;gap:12px;align-items:center;font-size:10.5px}
+  .drow span:first-child{color:var(--mid)}
+  .drow span:last-child{color:var(--ink);text-align:right}
+  .dbar{height:13px;border:1px solid var(--line);overflow:hidden}
+  .dbar i{display:block;height:100%;background:var(--mid)}
+
+  /* ── table ── */
+  .scroll{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:11.5px;min-width:520px}
+  th{text-align:left;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--mid);
+    font-weight:400;padding:13px 20px;border-bottom:1px solid var(--line);white-space:nowrap}
+  td{padding:11px 20px;border-bottom:1px solid rgba(63,148,98,.14);color:var(--mid);white-space:nowrap}
+  tbody tr:last-child td{border-bottom:0}
+  tbody tr:hover td{background:rgba(93,255,143,.05)}
+  .t-id{color:var(--ink)}
+  .t-v{color:var(--accent)}
+  .num{text-align:right}
+
+  /* ── steps / docs ── */
+  .steps{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line)}
+  .step{padding:24px 22px 28px;border-left:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .step:nth-child(4n+1){border-left:0}
+  .step-n{font-size:10px;letter-spacing:.2em;color:var(--accent);margin-bottom:14px}
+  .step p{margin:0;color:var(--mid);line-height:1.75;font-size:12px}
+  .doc{border-top:1px solid var(--line);padding-top:26px;margin-top:32px}
+  .doc:first-of-type{border-top:0;padding-top:0;margin-top:0}
+  .doc p,.doc li{color:var(--mid);max-width:78ch}
+  .doc ul{padding-left:20px}
+  .doc li{margin-bottom:8px}
+  .doc b,.doc strong{color:var(--ink);font-weight:400}
+  pre.code{border:1px solid var(--line);padding:16px 18px;overflow-x:auto;color:var(--mid);
+    font-size:11.5px;line-height:1.8;margin:16px 0;white-space:pre}
+  .code .hl{color:var(--accent)}
+  code{color:var(--accent)}
+
+  .links{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line)}
+  .lk{display:block;text-decoration:none;padding:24px 22px 28px;border-left:1px solid var(--line);
+    border-bottom:1px solid var(--line);transition:background .15s}
+  .lk:nth-child(3n+1){border-left:0}
+  .lk:hover{background:rgba(93,255,143,.05)}
+  .lk-k{font-size:10px;letter-spacing:.17em;text-transform:uppercase;color:var(--mid);margin-bottom:11px}
+  .lk-t{font-size:15px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+  .lk-d{font-size:11.5px;color:var(--mid);line-height:1.7}
+
+  .foot{margin-top:56px;padding-top:26px;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(3,1fr);gap:30px}
+  .foot-t{font-size:9.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--amber);margin-bottom:9px}
+  .foot p{margin:0;font-size:11px;color:var(--mid);line-height:1.75}
+
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(12px);
+    background:var(--accent);color:#000;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    padding:12px 22px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:80;
+    max-width:calc(100vw - 32px);text-align:center}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.err{background:var(--amber)}
+
+  @media (max-width:980px){
+    .cols,.cols2{grid-template-columns:1fr}
+    .g4,.steps{grid-template-columns:repeat(2,1fr)}
+    .g4 .cell:nth-child(2n+1),.steps .step:nth-child(2n+1){border-left:0}
+    .g4 .cell:nth-child(4n+1){border-left:0}
+    .art-grid{grid-template-columns:repeat(3,1fr)}
+    .art:nth-child(3n+1){border-left:0}
+    .links{grid-template-columns:1fr}
+    .lk{border-left:0}
+    .foot{grid-template-columns:1fr}
+  }
+  @media (max-width:600px){
+    .g4,.g3,.steps{grid-template-columns:1fr}
+    .cell,.step{border-left:0}
+    .art-grid{grid-template-columns:repeat(2,1fr)}
+    .art:nth-child(2n+1){border-left:0}
+    .top-b{gap:16px}
+    .c-k{min-height:0}
+    .drow{grid-template-columns:74px 1fr 38px;gap:9px}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="top">
+  <div class="top-a">
+    <span class="mark" id="mark">KEYVAULT</span>
+    <span class="tagword">beta</span>
+    <span class="spacer"></span>
+    <button class="btn" id="wallet-btn" type="button"><span class="led off" id="led"></span><span id="wallet-lbl">Connect wallet</span></button>
+  </div>
+  <div class="top-b">
+    <a href="#/" data-r="/">Overview</a>
+    <a href="#/collection" data-r="/collection">Collection</a>
+    <a href="#/vault" data-r="/vault">Vault</a>
+    <a href="#/token" data-r="/token">Token</a>
+    <a href="#/keys" data-r="/keys">Keys</a>
+    <a href="#/docs" data-r="/docs">Docs</a>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ══ OVERVIEW ══ -->
+  <div class="view" id="v-home" hidden>
+    <div class="hero">
+      <pre class="banner" id="banner" aria-label="KEYVAULT"></pre>
+      <p class="hero-lead">One key is one percent of one zkSNARK.</p>
+      <p class="hero-body">
+        The floor is <b id="h-floor">$1,332</b>. Most people cannot buy in at that price. A key costs
+        <b id="h-kp">$13.32</b> — paid in USDC, backed by a zkSNARK the vault actually holds on Zcash.
+        Collect one hundred and redeem them for a whole piece.
+      </p>
+      <p class="hero-body">
+        Supply is capped at one hundred keys per NFT in the vault. No key exists without an
+        NFT behind it, and the vault's viewing key is published so anyone can check.
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-solid" href="#/keys">Buy keys</a>
+        <a class="btn" href="#/vault">Inspect the vault</a>
+      </div>
+    </div>
+
+    <section>
+      <p class="sec-k">The market</p>
+      <div class="grid g4">
+        <div class="cell"><div class="c-k">Current lowest<br>price zkSNARK</div><div class="c-v" id="o-floor">$1,332</div><div class="c-s" id="o-floor-s">0.9 ZEC · 1,605 listed</div></div>
+        <div class="cell"><div class="c-k">Price of<br>one key</div><div class="c-v" id="o-key">$13.32</div><div class="c-s">1% of the floor, always</div></div>
+        <div class="cell"><div class="c-k">zkSNARKs<br>in the vault</div><div class="c-v" id="o-vault">5</div><div class="c-s" id="o-vault-s">$6,658 at floor</div></div>
+        <div class="cell"><div class="c-k">Keys available<br>to issue</div><div class="c-v" id="o-avail">182</div><div class="c-s" id="o-avail-s">of 500 cap</div></div>
+      </div>
+    </section>
+
+    <section>
+      <p class="sec-k">Held in the vault</p>
+      <div class="art-grid" id="o-art"></div>
+    </section>
+
+    <section>
+      <p class="sec-k">Sections</p>
+      <div class="links">
+        <a class="lk" href="#/collection"><div class="lk-k">01 · Live</div><div class="lk-t">Collection</div><div class="lk-d">Floor, volume, listing depth and every sale as it lands on Zilkroad.</div></a>
+        <a class="lk" href="#/vault"><div class="lk-k">02 · Proof</div><div class="lk-t">Vault</div><div class="lk-d">What is held, what it cost, and how to verify it yourself.</div></a>
+        <a class="lk" href="#/token"><div class="lk-k">03 · Monitor</div><div class="lk-t">Token</div><div class="lk-d">Price, fees generated, and which NFTs those fees bought.</div></a>
+        <a class="lk" href="#/keys"><div class="lk-k">04 · Trade</div><div class="lk-t">Keys</div><div class="lk-d">Buy with USDC, track your position, redeem for a whole piece.</div></a>
+        <a class="lk" href="#/docs"><div class="lk-k">05 · Reference</div><div class="lk-t">Docs</div><div class="lk-d">Pricing, supply rules, redemption, and the open questions.</div></a>
+        <a class="lk" href="https://zilkroad.com/" target="_blank" rel="noopener"><div class="lk-k">06 · External</div><div class="lk-t">Zilkroad ↗</div><div class="lk-d">The marketplace every number on this site is read from.</div></a>
+      </div>
+    </section>
+  </div>
+
+  <!-- ══ COLLECTION ══ -->
+  <div class="view" id="v-collection" hidden>
+    <div class="page-hd">
+      <h2>zkSNARKs — live market</h2>
+      <p>10,000 shielded identities on Zcash. Every figure below is read from Zilkroad's public market API, the same feed that prices every key.</p>
+    </div>
+
+    <section style="margin-top:0">
+      <p class="sec-k">Market · <span id="c-at"></span> <span class="live" id="live">Snapshot</span></p>
+      <div class="grid g4">
+        <div class="cell"><div class="c-k">Current lowest<br>price zkSNARK</div><div class="c-v" id="c-floor"></div><div class="c-s" id="c-floor-s"></div></div>
+        <div class="cell"><div class="c-k">Volume<br>(24 hours)</div><div class="c-v" id="c-vol"></div><div class="c-s" id="c-vol-s"></div></div>
+        <div class="cell"><div class="c-k">Sales<br>(24 hours)</div><div class="c-v" id="c-sales"></div><div class="c-s" id="c-sales-s"></div></div>
+        <div class="cell"><div class="c-k">Listed<br>for sale</div><div class="c-v" id="c-listed"></div><div class="c-s">16.1% of supply</div></div>
+      </div>
+      <div class="grid g3" style="border-top:0">
+        <div class="cell"><div class="c-k">ZEC / USD</div><div class="c-v pale" id="c-zec"></div><div class="c-s">via CoinGecko</div></div>
+        <div class="cell"><div class="c-k">Collection value<br>at floor</div><div class="c-v pale" id="c-mcap"></div><div class="c-s">9,000 ZEC</div></div>
+        <div class="cell"><div class="c-k">Median ask</div><div class="c-v pale" id="c-med"></div><div class="c-s">ZEC · 4.0× the floor</div></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="cols2">
+        <div class="block">
+          <div class="block-hd"><span class="block-t">Listing depth</span><span class="block-n">1,605 asks</span></div>
+          <div class="block-bd"><div class="depth" id="c-depth"></div></div>
+        </div>
+        <div class="block">
+          <div class="block-hd"><span class="block-t">Cheapest asks</span><span class="block-n">Floor side</span></div>
+          <div class="scroll"><table>
+            <thead><tr><th>Piece</th><th class="num">Ask</th><th class="num">USD</th><th class="num">vs floor</th></tr></thead>
+            <tbody id="c-cheap"></tbody>
+          </table></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <p class="sec-k">Recent transactions</p>
+      <div class="block">
+        <div class="block-hd"><span class="block-t">Trade feed</span><span class="block-n">ASK = bought at listing · OFFER = bid accepted</span></div>
+        <div class="scroll"><table>
+          <thead><tr><th>Piece</th><th class="num">Price</th><th class="num">USD</th><th>Via</th><th class="num">Ago</th></tr></thead>
+          <tbody id="c-feed"></tbody>
+        </table></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ══ VAULT ══ -->
+  <div class="view" id="v-vault" hidden>
+    <div class="page-hd">
+      <h2>The vault</h2>
+      <p>Five zkSNARKs, held at one shielded Zcash address. Below is what is in it, what it cost, and three independent ways to check that without taking our word for it.</p>
+    </div>
+
+    <section style="margin-top:0">
+      <div class="grid g4">
+        <div class="cell"><div class="c-k">zkSNARKs<br>held</div><div class="c-v" id="vl-n">5</div><div class="c-s" id="vl-n-s"></div></div>
+        <div class="cell"><div class="c-k">Cost<br>basis</div><div class="c-v pale" id="vl-cost">5.02</div><div class="c-s">ZEC across 5 pieces</div></div>
+        <div class="cell"><div class="c-k">Keys issued<br>against it</div><div class="c-v pale" id="vl-keys">318</div><div class="c-s" id="vl-keys-s">of 500 cap</div></div>
+        <div class="cell"><div class="c-k">Backing<br>ratio</div><div class="c-v" id="vl-ratio">100%</div><div class="c-s">1 key = 1% of a real NFT</div></div>
+      </div>
+      <div class="grid g3" style="border-top:0">
+        <div class="cell"><div class="c-k">USDC float<br>for payouts</div><div class="c-v pale" id="vl-float">$1,200</div><div class="c-s">covers instant sells</div></div>
+        <div class="cell"><div class="c-k">Key value<br>outstanding</div><div class="c-v pale" id="vl-out">$4,236</div><div class="c-s" id="vl-out-s">318 keys at floor</div></div>
+        <div class="cell"><div class="c-k">Vault wallet</div><div class="c-v pale" style="font-size:13px;line-height:1.7" id="vl-wallet">Set at launch</div><div class="c-s">where key payments arrive</div></div>
+      </div>
+    </section>
+
+    <section>
+      <p class="sec-k">Holdings</p>
+      <div class="art-grid" id="vl-art"></div>
+    </section>
+
+    <section>
+      <p class="sec-k">Verify it yourself</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-n">01</div><h3>Viewing key</h3>
+          <p>The vault's Zcash viewing key is published. It lets anyone read every note the address holds — and nothing else. It cannot move funds, ever.</p>
+        </div>
+        <div class="step">
+          <div class="step-n">02</div><h3>Piece numbers</h3>
+          <p>Every piece number is listed above. Check each one against Zilkroad's sales feed and you will find the purchase, at the price and time we state.</p>
+        </div>
+        <div class="step">
+          <div class="step-n">03</div><h3>Not for sale</h3>
+          <p>Query Zilkroad's listings for those numbers. If a vault piece ever appears as an active ask, something is wrong and you should act on it.</p>
+        </div>
+        <div class="step">
+          <div class="step-n">04</div><h3>Attestation</h3>
+          <p>A third party holding the viewing key signs a monthly statement of holdings. Published here, timestamped, with the previous months kept.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="block">
+        <div class="block-hd"><span class="block-t">Audit</span><span class="block-n">Read-only credentials</span></div>
+        <div class="block-bd">
+          <dl class="rows" style="padding:0">
+            <div class="row"><dt>Vault address</dt><dd>u1q9k…published on launch</dd></div>
+            <div class="row"><dt>Viewing key</dt><dd>zxviews1…published on launch</dd></div>
+            <div class="row"><dt>Last attestation</dt><dd>Pending — first one at launch + 30d</dd></div>
+            <div class="row"><dt>Pieces listed for sale</dt><dd class="up">0 of 5</dd></div>
+          </dl>
+          <p class="note">
+            A viewing key is read-only by construction. Publishing it gives up nothing except
+            privacy about what the vault holds — which is the entire point.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ══ TOKEN ══ -->
+  <div class="view" id="v-token" hidden>
+    <div class="page-hd">
+      <h2 class="tk">$ZKEY</h2>
+      <p>You never need the token to buy keys. It exists for one reason: Pons pays its trading fees in ETH to the creator wallet, that ETH is converted to ZEC, and the ZEC buys zkSNARKs into the same vault your keys are backed by. Every trade makes every key worth more.</p>
+    </div>
+
+    <section style="margin-top:0">
+      <div class="block">
+        <div class="block-hd"><span class="block-t">Price</span><span class="block-n">72h · sample data</span></div>
+        <div style="padding:18px 20px 2px" id="chart"></div>
+        <div class="grid g4" style="border-top:1px solid var(--line)">
+          <div class="cell" style="border-bottom:0"><div class="c-k">Price</div><div class="c-v pale" style="font-size:20px">$0.000418</div></div>
+          <div class="cell" style="border-bottom:0"><div class="c-k">Market cap</div><div class="c-v pale" style="font-size:20px">$418,000</div></div>
+          <div class="cell" style="border-bottom:0"><div class="c-k">Volume 24h</div><div class="c-v pale" style="font-size:20px">$184,200</div></div>
+          <div class="cell" style="border-bottom:0"><div class="c-k">Fees generated</div><div class="c-v" style="font-size:20px">$9,210</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <p class="sec-k">Fee deployment</p>
+      <div class="block">
+        <div class="block-hd"><span class="block-t">Bought with ETH fees</span><span class="block-n">2 of 5 vault pieces · $6,480 undeployed</span></div>
+        <div class="scroll"><table>
+          <thead><tr><th>Piece</th><th class="num">Paid</th><th class="num">USD then</th><th class="num">USD now</th><th class="num">When</th></tr></thead>
+          <tbody>
+            <tr><td class="t-id">#361</td><td class="num t-v">1.00 ZEC</td><td class="num">$1,502</td><td class="num">$1,480</td><td class="num">5h ago</td></tr>
+            <tr><td class="t-id">#3026</td><td class="num t-v">1.05 ZEC</td><td class="num">$1,560</td><td class="num">$1,554</td><td class="num">11h ago</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <section>
+      <p class="sec-k">Why it matters to key holders</p>
+      <div class="steps">
+        <div class="step"><div class="step-n">01</div><h3>Someone trades</h3><p>Every buy and sell on Pons pays a fee in ETH to the creator wallet.</p></div>
+        <div class="step"><div class="step-n">02</div><h3>ETH becomes ZEC</h3><p>Fees pool, convert to ZEC, and wait until they cover a floor piece.</p></div>
+        <div class="step"><div class="step-n">03</div><h3>Vault grows</h3><p>The piece joins the vault with no new keys issued against it.</p></div>
+        <div class="step"><div class="step-n">04</div><h3>Keys back more</h3><p>Same key count, more NFTs. Holders gain without paying again.</p></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ══ KEYS ══ -->
+  <div class="view" id="v-keys" hidden>
+    <div class="page-hd">
+      <h2>Keys</h2>
+      <p>One key is 1% of one zkSNARK, priced off the live Zilkroad floor and paid in USDC. Supply is hard-capped at 100 keys per NFT the vault actually holds.</p>
+    </div>
+
+    <section style="margin-top:0">
+      <div class="grid g4">
+        <div class="cell"><div class="c-k">Price of<br>one key</div><div class="c-v" id="k-price"></div><div class="c-s">1% of the floor, always</div></div>
+        <div class="cell"><div class="c-k">zkSNARKs<br>in the vault</div><div class="c-v pale" id="k-nfts"></div><div class="c-s" id="k-nfts-s"></div></div>
+        <div class="cell"><div class="c-k">Keys available<br>to issue</div><div class="c-v pale" id="k-avail"></div><div class="c-s" id="k-avail-s"></div></div>
+        <div class="cell"><div class="c-k">Backing<br>ratio</div><div class="c-v">100%</div><div class="c-s">1 key = 1% of a real NFT</div></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="cols">
+        <div class="block">
+          <div class="block-hd"><span class="block-t">Buy keys</span><span class="block-n">Pay in USDC</span></div>
+          <div class="block-bd">
+            <label class="lbl" for="usdc-in">You pay</label>
+            <div class="inp">
+              <input id="usdc-in" type="number" min="1" step="10" value="250" inputmode="decimal" aria-label="USDC amount">
+              <span class="inp-u">USDC</span>
+            </div>
+            <div class="quick">
+              <button type="button" data-amt="100">$100</button>
+              <button type="button" data-amt="250">$250</button>
+              <button type="button" data-amt="500">$500</button>
+              <button type="button" data-amt="floor">1 NFT</button>
+              <button type="button" data-amt="max">Max</button>
+            </div>
+
+            <div class="to">↓</div>
+
+            <div class="out">
+              <div class="out-top">
+                <span class="out-n" id="r-keys">18</span>
+                <span class="out-u">Keys</span>
+                <span class="out-eq">= <b id="r-pct">18.00%</b> of one zkSNARK</span>
+              </div>
+              <dl class="rows">
+                <div class="row"><dt>Price per key</dt><dd id="r-unit"></dd></div>
+                <div class="row"><dt>Total</dt><dd id="r-total"></dd></div>
+                <div class="row"><dt>Change returned</dt><dd id="r-change"></dd></div>
+                <div class="row"><dt>Your position after</dt><dd id="r-after"></dd></div>
+              </dl>
+            </div>
+
+            <div class="meter">
+              <div class="meter-t"><span>Key supply issued</span><span><b id="m-sold">318</b> / <span id="m-cap">500</span></span></div>
+              <div class="bar"><i id="m-bar" style="width:63.6%"></i></div>
+              <p class="note" id="m-note"></p>
+            </div>
+
+            <div class="cta"><button class="btn btn-solid" id="buy-btn" type="button">Buy 18 keys</button></div>
+          </div>
+        </div>
+
+        <div class="block">
+          <div class="block-hd"><span class="block-t">Your position</span><span class="block-n" id="pos-addr">Not connected</span></div>
+          <div class="block-bd" id="pos-on" hidden>
+            <div class="pos-line"><span class="pos-num" id="p-keys">0</span><span class="pos-u">Keys</span></div>
+            <div class="pos-sub"><span id="p-val"></span> at floor · <b id="p-pct"></b> of a zkSNARK</div>
+            <dl class="rows" style="padding:0 0 4px">
+              <div class="row"><dt>Average cost</dt><dd id="p-avg"></dd></div>
+              <div class="row"><dt>Unrealised</dt><dd id="p-pnl"></dd></div>
+              <div class="row"><dt>Payout</dt><dd id="p-instant">Instant</dd></div>
+            </dl>
+            <div class="rd">
+              <div class="rd-hd"><span>Sell keys</span><span>Paid in USDC to <b id="sell-to">your wallet</b></span></div>
+              <div class="inp">
+                <input id="sell-in" type="number" min="0" step="1" value="0" inputmode="numeric" aria-label="Keys to sell">
+                <span class="inp-u">KEYS</span>
+              </div>
+              <dl class="rows" style="padding:10px 0 4px">
+                <div class="row"><dt>Value at floor</dt><dd id="sell-gross">$0.00</dd></div>
+                <div class="row"><dt>Exit fee (2%)</dt><dd id="sell-fee">$0.00</dd></div>
+                <div class="row"><dt>You receive</dt><dd id="sell-net">$0.00</dd></div>
+                <div class="row"><dt>Settlement</dt><dd id="sell-eta">&mdash;</dd></div>
+              </dl>
+              <div class="cta"><button class="btn" id="sell-btn" type="button" disabled>Sell keys</button></div>
+            </div>
+
+            <div class="rd">
+              <div class="rd-hd"><span>Redeem a whole NFT</span><span><b id="p-need">100</b> keys to go</span></div>
+              <div class="bar"><i class="dim" id="p-bar" style="width:0%"></i></div>
+              <div class="cta"><button class="btn" id="redeem-btn" type="button" disabled>Redeem 100 keys</button></div>
+            </div>
+          </div>
+          <div class="empty" id="pos-off">
+            <p>No wallet connected.<br>Connect to buy keys, sell them, or redeem.</p>
+            <button class="btn btn-solid" id="connect-btn" type="button">Connect wallet</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <p class="sec-k">Backing these keys</p>
+      <div class="art-grid" id="k-art"></div>
+    </section>
+
+    <section>
+      <p class="sec-k">Selling your keys</p>
+      <div class="steps" style="grid-template-columns:repeat(3,1fr)">
+        <div class="step">
+          <div class="step-n">Step 1</div><h3>Say how many</h3>
+          <p>Enter the number of keys. They are valued at the live floor, minus a 2% exit fee.
+             Nothing is locked until you confirm.</p>
+        </div>
+        <div class="step">
+          <div class="step-n">Step 2</div><h3>We pay from the float</h3>
+          <p>A USDC buffer sits next to the NFTs so payouts do not wait on anything. USDC lands
+             in the wallet you connected, usually within minutes.</p>
+        </div>
+        <div class="step">
+          <div class="step-n">Step 3</div><h3>The float refills</h3>
+          <p>When the buffer runs low we sell a piece on Zilkroad to top it up. If a payout ever
+             exceeds the buffer it queues and settles in three to seven days &mdash; and the site
+             says so before you confirm, not after.</p>
+        </div>
+      </div>
+      <div class="block" style="margin-top:18px">
+        <div class="block-hd"><span class="block-t">Payout capacity</span><span class="block-n">Published, not promised</span></div>
+        <div class="block-bd">
+          <div class="meter-t"><span>USDC float available for instant payout</span><span><b id="fl-amt">$1,200</b> / <span id="fl-out">$4,236</span> outstanding</span></div>
+          <div class="bar"><i id="fl-bar" style="width:28%"></i></div>
+          <p class="note">
+            The float is what makes instant payouts possible, and it is the honest limit on them.
+            Anything larger queues behind an NFT sale. We publish the number because a promise of
+            instant liquidity is only worth the cash standing behind it.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ══ DOCS ══ -->
+  <div class="view" id="v-docs" hidden>
+    <div class="page-hd">
+      <h2>How it works</h2>
+      <p>Everything the product does, the rules it follows, and the parts that are not settled yet.</p>
+    </div>
+
+    <section style="margin-top:0">
+      <div class="steps">
+        <div class="step"><div class="step-n">01</div><h3>You buy keys</h3><p>Pay USDC. A key costs 1% of the current Zilkroad floor. No token needed, ever.</p></div>
+        <div class="step"><div class="step-n">02</div><h3>The vault buys</h3><p>Your USDC pools with everyone else's and buys real zkSNARKs. Every purchase is logged.</p></div>
+        <div class="step"><div class="step-n">03</div><h3>Fees top it up</h3><p>Token trading fees buy more pieces into the same vault, so keys back more over time.</p></div>
+        <div class="step"><div class="step-n">04</div><h3>Sell or redeem</h3><p>Sell keys for USDC any time, or hold 100 and claim a whole NFT.</p></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="doc">
+        <h3>Key pricing</h3>
+        <p>A key is always worth exactly 1% of one zkSNARK. The price is read from Zilkroad's floor at the moment you buy:</p>
+        <pre class="code"><span class="hl">key price (USD) = floorZec × zecUsd ÷ 100</span></pre>
+        <p>At the snapshot on this site — 0.9 ZEC floor, ZEC at $1,479.56 — that is <b>$13.32</b>. If the floor doubles, a key is worth double. If it halves, so does the key. Pricing reads a short rolling average rather than the instantaneous floor, so one cheap listing cannot be used to mint keys below their real backing.</p>
+      </div>
+
+      <div class="doc">
+        <h3>Supply cap</h3>
+        <p>Keys can never exceed 100 × the number of NFTs in the vault. Five pieces means a hard ceiling of 500 keys. The cap rises only when the vault buys another piece, and it is enforced in code — when availability hits zero, buying stops until the next acquisition. This is the rule that makes "100% backed" a fact rather than a slogan.</p>
+      </div>
+
+      <div class="doc">
+        <h3>Getting out</h3>
+        <ul>
+          <li><b>Sell for USDC.</b> Say how many keys, get the floor value minus a 2% exit fee, paid to the wallet you connected. Comes out of the USDC float, so usually minutes.</li>
+          <li><b>If the float is short.</b> A payout larger than the float queues while we sell a piece on Zilkroad and convert. Three to seven days. The float is published so you can see that limit before you buy, not after.</li>
+          <li><b>Redeem the NFT.</b> Hold 100 keys, give us a shielded Zcash address, receive the piece itself. Then sell it on Zilkroad at whatever price you like.</li>
+        </ul>
+        <p>Key balances are held and settled by us against the vault, in USDC, to the wallet you connect.</p>
+      </div>
+      <div class="doc">
+        <h3>Live data</h3>
+        <p>Zilkroad exposes a public JSON API with no authentication:</p>
+        <pre class="code"><span class="hl">GET /api/market/stats</span>      floorZec, supply, sales24h, volume24hZec
+<span class="hl">GET /api/market/rate</span>       zecUsd (CoinGecko) + staleness flag
+<span class="hl">GET /api/market/listings</span>   every ask, with piece number and image
+<span class="hl">GET /api/market/sales</span>      recent fills; via = "ask" | "offer"
+<span class="hl">GET /api/market/tokens</span>     trait table for all 10,000 pieces
+<span class="hl">GET /api/art/{id}</span>          the artwork itself, as PNG</pre>
+        <p>The responses carry <b>no Access-Control-Allow-Origin header</b>, so a browser on another domain cannot call them directly. A small server-side proxy that fetches, caches and re-serves with CORS enabled is required. Zilkroad sets <code>cache-control: max-age=15</code>, so a 15-second cache matches their own freshness. Note that <code>limit</code> is ignored on the listings endpoint — it returns all 1,605 rows every time.</p>
+      </div>
+
+      <div class="doc">
+        <h3>What is not settled</h3>
+        <ul>
+          <li><b>Redemption delivery.</b> It is not confirmed whether a zkSNARK can be sent directly to an arbitrary shielded address, or only transferred by selling through a Zilkroad listing. If it is the latter, redemption needs a different mechanism. This is the biggest open question.</li>
+          <li><b>Custody.</b> Zcash has no smart contracts, so the vault is a shielded address under human control. The mitigation is the published viewing key.</li>
+          <li><b>Regulation.</b> Pooled USDC, managed acquisitions and a claim on held assets is a regulated product in most jurisdictions. This needs a legal opinion before launch.</li>
+          <li><b>Floor volatility.</b> The collection is days old. The floor moved from 1.89 ZEC to 0.90 ZEC inside one day, roughly −52%. Keys track that all the way down.</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <div class="foot">
+    <div><div class="foot-t">Prototype</div><p>Market figures are a real snapshot from Zilkroad's API. The vault, token, keys and positions are sample data. Nothing is wired to a chain.</p></div>
+    <div><div class="foot-t">Unresolved</div><p>Redemption depends on whether a zkSNARK can be sent directly to a shielded address. Confirm with Zilkroad before building the backend.</p></div>
+    <div><div class="foot-t">Before taking money</div><p>Pooled USDC, managed acquisitions and a claim on held assets is a regulated product in most jurisdictions. Get an opinion first.</p></div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var NAME = "ZKEYSNARKS";                 /* project name — rendered as the block banner */
+  var HL = [1, 3];                         /* highlight "KEY" (chars 1–3) in the theme colour */
+  var TICKER = "ZKEY";
+  var CHAIN = { id: "0x1237", n: 4663, name: "Robinhood Chain" };
+
+  /* Market data proxy. "/api" = the Vercel function in this same project,
+     so it is same-origin and CORS never applies. Set to "" to force the
+     built-in snapshot instead (useful offline). */
+  var API_BASE = "/api";
+
+  /* ── payment rails ───────────────────────────────────────────────────
+     VAULT_WALLET  the wallet users pay USDC into, and payouts come from
+     USDC.address  the USDC contract on Robinhood Chain (6 decimals)
+     Leave either blank and the site runs in demo mode: the buy button
+     credits keys locally without moving any money. */
+  var VAULT_WALLET = "";
+  var USDC = { address: "", decimals: 6, symbol: "USDC" };
+  var EXIT_FEE = 0.02;   /* 2% on sells */
+
+  /* real snapshot · zilkroad.com API · 2026-09-19 20:50 UTC */
+  var MKT = {
+    floorZec: 0.9, zecUsd: 1479.56, supply: 10000, mcapZec: 9000,
+    sales24h: 1581, salesTotal: 1584, vol24hZec: 3561.33,
+    listed: 1605, medianZec: 3.61, at: "19 SEP 2026 · 20:50 UTC"
+  };
+  var DEPTH = [["0.90–1.00",14],["1.00–1.25",52],["1.25–1.50",94],["1.50–2.00",146],
+               ["2.00–3.00",337],["3.00–5.00",380],["5.00–10.0",307],["10.0+",275]];
+  var CHEAP = [[6849,.9],[361,.9],[1986,.9],[2328,.94],[3026,.95],[3649,.97],[565,.97],[7847,.97]];
+  var SALES = [[25,.89,"a",1],[3056,.88,"a",1],[1994,.001,"o",4],[7631,1,"a",5],[3893,.9,"a",5],
+    [8086,.9,"a",5],[1035,1,"a",5],[5329,1,"a",5],[3346,1,"a",5],[27,.001,"o",5],[2371,1,"a",7],
+    [3384,.9,"a",7],[1634,.9,"a",7],[6950,3.44,"a",7],[4215,.89,"a",7],[1273,.9,"a",7],
+    [3292,.9,"a",7],[6701,1.4,"a",7],[6938,1.5,"a",7],[7519,.9,"a",7],[2444,1.3,"a",9],
+    [7866,.99,"a",9],[5153,.9,"a",9],[4231,.899,"a",11],[1351,1,"a",11],[6691,.99,"a",11],
+    [4590,1.33,"a",11],[3405,.979,"a",11],[2509,1.2,"a",11],[7187,1.3,"a",11]];
+  var ART = {
+    6849:"iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAB/klEQVR4AeyTzSulURjAn2ZqakzXdDM1aqZmamZqJMrGxsLKUrG0sVAWYmFn6R+woxQrUmQlVlKsJFYSRdnId7FAUSLu79Tz9pxz3vfme6Xu7z3P+XjO7z7Pe+8HEbl7CxAVPK//eRc9uccPat3gl2aBJ1sKiami8dYGaa+tlJE/bY6anxUCd9/6pRiF+zI/qaKW0TkZXtmIkpbLDqM1u8CXsHMbeyKthAPEjC+FJ9JKkJyeX8pF1ZbzbN0cuZHH/u2JFGMv38uxCE+kuwi7phYFPtXtCujex/Kcho8aPRGVkM040FQnQGWQ674WKBkql9z0v6JwR4gnohIOMJaVlhC+GJ7I3oqM1iEEu0dc+n9GgBiIgTiNSMT/Rw/SQmJax/gcIhH/HwT2/XT2LEaO881GAd0gBp2HYyLicq1G26atmxhsCPMePU9EXE414Q2s27W99VU7jeKs/UQUZlAhaAsXZpfCI6nzyo6+1PVMEZWAtm//7EpUxrcGeyNzsGs2jkRUoe+Kg8zXdk8JBdnY5HwkVEFWNSRHIqrgXSEAfto/vn7mbIIKkVpoc3IoCCKR7iPM53Py99d3t4RMcQvmYdezZJ6ICjiobO8cu+uQWeqrf4vF7hG7pODhiahCXz4JgEwJcqOpnuOLhpueiE2qmt88IHQgU/SirNElZDzuAQAA///xOOFXAAAABklEQVQDAKutPOwn5+z1AAAAAElFTkSuQmCC",
+    361:"iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAC+ElEQVR4AexUu24TQRQ96yT2IiUFkgVSZImXGwSJsIj7dOYDEiUF6VKHhvwAlKGgokYyBQg+gJTUSRpoEDaPxoliJJQQB/zMcs7MrtnxSxABFbt7Zu7cuXPP3Dt3JwEg+BcQEXn+/vef6NQ5/qXUpacfQTg1CxcOJFrJX0Fh5hKu5x4bZDKzEC5c/Y5RwIhnIFFx6z0233zsW3Z2aqdPF1doE/FxXHaIbCQXzfxtRmWEP9Q4RDaSTxBh+yTAtcQ9Q9NulU2vptOqYBQy2Z+2so/gEEVKET7d+YBnRG78PoRo7vy58Uj8rd4hUiRarX7p5mUITUYmzJ9Zxby/iqXpBazdWMZajlAf4k6sl49eOESKRAbqkwkPHgcCKAUBr0Q74Aj2htRY4NAqKXiRgnLsc4hieohM6ZsgYZJWnicHQdff+ottrD/fhhfYVXcpSwdtyKqcli6cMW7N2qqTVimUZ6UuuuMD8gmaF8RDlUSD+JxRhE0f0cvXtuqWeUYtnU8ntJQ3RmUioPeNxTkIZpZzGwtzeLCYtyk1SrfpEmn3hTCaKG1KndKWZPqcZXQsQgEkJ686mgRhT7Hn6xLJ+Saj6Zk3Z2V0zH1AofK5ZnYtWTBnIsHAQ6XKedr1fl2i3glFuJLPdkt877hlD14OGREELgo7gJHJ4OGrtxj0DCVShMWtsvlplboaz2rvuAk5292vQZBzHb44KtWjodGATx+R7rjCjFt5X5onNA1Q6wR4d9BC9RsJqansH2FXBCTmEMOi0Vwf0RNzc6vysubOU2lPjjNBShnhsc4P2wFKhw2UidJBE6WvBGXdJHI6CH1EkZHSpmLzx2TiQWSTE+o5jvJFftlPjQGTY3YwjIyrZGqhApBhhDpTpRLz6cinI5/MPuV0ykM6KSSQTiWQ5FyK8ENYb27rEBWZNt3YOvxoUZ0/bYOEImXmmDjXAeDxhXkatJWdNmoUscYhkl5RVessMQ3oIsUozG55Tg2qmyJlbcQ3IOfaDH81s2pQ8wMAAP//0SVMagAAAAZJREFUAwA6vmJ3f55NCwAAAABJRU5ErkJggg==",
+    1986:"iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAACR0lEQVR4AeyTu2tUQRTGD1ZJNg/WFGHxEUELIRi0MBZb2JhYCWKXRhCiIFoK+QssREshhVYSUCzEShAlFrIE0yhRIYUWwQdYRDGFlnp/I99wZuZe8IFWwv3mPGbO/O45d3eLmX37FwJUcf7+8x/02zP+6dG1BodNGuvssCY1vUkt6ObJaTs9NRFrACgYHBqx1ae9KPLEsrwAfq5a0OyNB3Zt5aUB9BAVTx7oGlKMFQy/TgmIi9UJPgXXTxyyS0f24UZxKcpheRwLKicB+U42Nr8YmrvzxOYfPq+Olg8wZYH4WHnZBKQkwPN3e4boCGmvb6BlU90ZO3psNkixbGf7Ttt/sGvju/eqJNgEpHFhrx7vGlJXK5fPGApV1fLp40a1mrW3jiYiqT0PS0B0wkHs6PAAbpD/RssLF0y6d/GU1Wn99ZpJ4YJqSUBVHB9gjA4g0karv89QZ2bOED7CR/g6620B0q+OQ4wQy/iwf6ICpP+Pvg+Qc/O9grH5eNGQNvCR4txGEG+vbjQ2je7WwnRe98txBHE53eQ3kPe5ty+e+bDwm/YjKK+gQ6QRPrq/nB+pjSfOXqnNN4LoBGl87z5/NcF4a+RvJEY+5/0CRBf6VhwkXn3z488JbPH2UgEUoKkb7ilAdMG3AoD41W0b6edslIBAvRhzPJQ5BUj7ANvtIdszPhZSwKSQcIvPN8ESEB1wUHq1/iFcB8zr8OQu8/J7+KEoWxIQXejjU4CASVltEeocL5pvJiA26Wpp7T1uEDBJFzXZUNCwfAcAAP//xfDXegAAAAZJREFUAwBask/sClVTTwAAAABJRU5ErkJggg==",
+    2328:"iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAADOElEQVR4AexVy0tUURj/FYSW0KLapaJloeTbJJWQFlKLiFxFm8iyTC3ymZoGtqhNG/+BoG2LiKBVVuQLRymf4TPJeVkG2iIqvefeO9P5HZ3Lvc6MhFBtgvmd73m/3/3OnO/c7QCCfwMkkjx//vefaMt7/G+37qPXCyL0+hOzs3g7OorewUEUFhZERSg/kozY0YHERBBzHg8mZmawsrICTQg01dZYNZaWlmEHA3wJykhwELn9fsz7fCqPHWmahlUJSiF05edCAko76CPsPrvuIEqKj0dyQgJIKHQdmiZUJ9TbbjWo5zYrxoRoXTmImEiQMPXgQeRmpMMwDNi7YXwrcBDN+7yqxgf3PMYmJ+EaGlJEgYCp/L+zROvYQZSckKhqHUpKBrdLl/+LLreQeunCNxBXtB14FNy1KfpSslQd++Igsgfys7JQLI+yaZoQ8sTZY9TPf13G0x/fQRnJps+OMCLOTCihs6sLum6o7Xu2f3fIbcnFJ+mWTmWjTV8IYURHDh9Ww9nV3w9dHgTd0BUZH7CTPd6zF9UX3aBkjNJu02eHReT2+/B+elrF8rOzcaKoCKdLShAwAzBNQ/m5PIzRcWnbz01xfG6MqQ5YREnxCchITXUEaZwrPYvY2FiqCvv27VUy2hItbhFtfJBH+1VPD56/6ERcXBwa2+5sTIlou1wDEf1RiQrz8lBSXIwzp05iZ0wMmuvqUNvUoorwrQllrC+0iXUzTIQRTc3N4d34uJX4urcPVRUVCAaDaGmox+fFL/IyXVJxFg6BjmjdMBZGlJaSgqOZmRgYHgZPnhAaHnR0IBAIKjISrspB9i18gte/AI/XD7fHh3mPF/W321gzIsKIQlkFubnQVjU1rLy92+/fQ2v7XTS2tlmEJJX0KJMdX7hcLv0B3GxqDpVwSAfR+NQUBkdG0O1y4WV3DzRdqBky1od2baYEbtTVo7qmFlerr6O8skoOtCk7DsgxMKFHuEXI6CDKTEvDsZwc8H7TtFUIfibk92jN1qBJXchtM3j/yYL0CyXFekzIHdBRdq2StR1wEDHypq9PEakisiN+JqjrwgA7M+VtwUvW8ktSxmkLvgTjUrKWHb8AAAD//6ySksAAAAAGSURBVAMA/5kBiGDd1LMAAAAASUVORK5CYII=",
+    3026:"iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAADYUlEQVR4AexUW29MURT+9plpy7iVRme8IkKCqbomxF1H/AISl7TqgfAftCQur30gUW20DR7Eo0QHiYTEJeglTURoBElnhtJWVaTtHOtbZ2a6p2fqQYIXM/s7a+1vr7O+vfbZezsA3L8BConOn2//hX57jf/t0iUqLiG1vS03+0RlIxKrLyv6ll2EYukF9BFLxGa43AsFnIIVRTqOoPzeflAgua4JpigAE3Tgjox6KVwX3f296Pz0Bl1fetEtFsJxAl6A/5knlFjVmKuEPsPdcR4z8YyATRJ2iYgr1ut64+S6KEiyAPKEIi9qvUpE0BQ5WoVWMjqO9NAPOdoumJAiXnogzb+IkvtVVU4BcVAw/KQGhCsiMFJOWlJLs+NduVQcWCkYZwdYvhUFcBNwjMuWXN8MwvD7SHXkFTJ7VkERAyNSLmtSy/Gpli9PiJuAwaxIK5GkkosUWkYa0PK9AR2hW5hdehezSu9gZmlcbbY/Y047iAeLo/qO/cgTsgciz2szS5cGxiatmQTu/dyPm9+GQStdtXafnA2f0OTzoxUFDQ6GTtjvqZ+4sVxt9jG5n+VpfUK+8xOYCDlYcpzvKK7PK8OxQ29BS4LW7pOzkcvCjZCtJrts4cfVcMfSCn3JMYiO7MHwwC4MDexQDIr9OrBTOdqRwSpset2p4fYjJ8SNwGrsQfqRZ4chW4quIjpvkVruOG7tgGxv+iRpV5QtpOuD42MyBK8f3m+6xYsDcEqnQb+Xgf6MdFxrBkZYYwwWvDwqnr85fspjuHysRpdPDm1VTz2cudN1kFURRsSMMMYYrCxbJChcjYRI3XxaSK5twsfYtRzDimKvTkNyoqqnDrv7zsMpD8HIIa6ILEGUKF8MXlVTVQP5+SoKP63B/Nv7kNzQrECxg3hFnYRK86aPqu46xN6fFZxB7J2A/odzSG1ukaDCzSeUDQs/qgZkSfSwio1X1iNeeQrxVVlRVdWY+JoML0chtbUVhX55QsmNV5Da0pqDKQkAcljd8TQUY+Nq49GTaM+APngEcjFykxRQcmwu/PAQyu8fmKDk5jHTi2BCAlqZsQmKuGNg6AuQAXkzLaixqdjViRwZL0+IXGpbG5z5IUCSKUZlhjJjyIxNSRD8ZppQqmXFpjgAtewHjKy2B+ay8RMAAP//Vb7FoQAAAAZJREFUAwANBHZNMgn4MgAAAABJRU5ErkJggg=="
+  };
+  var VAULT = [{id:6849,cost:.95,src:"k"},{id:361,cost:1,src:"f"},{id:1986,cost:.9,src:"k"},
+               {id:2328,cost:1.12,src:"k"},{id:3026,cost:1.05,src:"f"}];
+
+  var S = { per: 100, nfts: 5, sold: 318, mine: 0, avg: 0, addr: null, float: 1200 };
+
+  /* ── 5×5 block font ── */
+  var FONT = {
+    A:"01110/10001/11111/10001/10001",B:"11110/10001/11110/10001/11110",C:"01111/10000/10000/10000/01111",
+    D:"11110/10001/10001/10001/11110",E:"11111/10000/11110/10000/11111",F:"11111/10000/11110/10000/10000",
+    G:"01111/10000/10011/10001/01111",H:"10001/10001/11111/10001/10001",I:"11111/00100/00100/00100/11111",
+    J:"00111/00010/00010/10010/01100",K:"10001/10010/11100/10010/10001",L:"10000/10000/10000/10000/11111",
+    M:"10001/11011/10101/10001/10001",N:"10001/11001/10101/10011/10001",O:"01110/10001/10001/10001/01110",
+    P:"11110/10001/11110/10000/10000",Q:"01110/10001/10101/10010/01101",R:"11110/10001/11110/10010/10001",
+    S:"01111/10000/01110/00001/11110",T:"11111/00100/00100/00100/00100",U:"10001/10001/10001/10001/01110",
+    V:"10001/10001/10001/01010/00100",W:"10001/10001/10101/11011/10001",X:"10001/01010/00100/01010/10001",
+    Y:"10001/01010/00100/00100/00100",Z:"11111/00010/00100/01000/11111",
+    "0":"01110/10011/10101/11001/01110","1":"00100/01100/00100/00100/01110","2":"01110/10001/00010/00100/11111",
+    "3":"11110/00001/01110/00001/11110","4":"00010/00110/01010/11111/00010","5":"11111/10000/11110/00001/11110",
+    "6":"01110/10000/11110/10001/01110","7":"11111/00001/00010/00100/01000","8":"01110/10001/01110/10001/01110",
+    "9":"01110/10001/01111/00001/01110"," ":"00000/00000/00000/00000/00000"
+  };
+  function blockArt(word, hi) {
+    var chars = word.toUpperCase().split(""), rows = [];
+    for (var y = 0; y < 5; y++) {
+      var out = "";
+      for (var i = 0; i < chars.length; i++) {
+        var glyph = (FONT[chars[i]] || FONT[" "]).split("/")[y]
+          .replace(/1/g, "█").replace(/0/g, " ") + (i < chars.length - 1 ? " " : "");
+        out += (hi && i >= hi[0] && i <= hi[1]) ? '<span class="hl">' + glyph + "</span>" : glyph;
+      }
+      rows.push(out);
+    }
+    return rows.join("\n");
+  }
+  function markHtml(word, hi) {
+    return word.toUpperCase().split("").map(function (c, i) {
+      return (hi && i >= hi[0] && i <= hi[1]) ? '<span class="hl">' + c + "</span>" : c;
+    }).join("");
+  }
+
+  /* ── helpers ── */
+  var $ = function (i) { return document.getElementById(i); };
+  var usd = function (n, d) {
+    return "$" + n.toLocaleString("en-US", { minimumFractionDigits: d === undefined ? 2 : d,
+      maximumFractionDigits: d === undefined ? 2 : d });
+  };
+  var num = function (n) { return n.toLocaleString("en-US"); };
+  var floorUsd = function () { return MKT.floorZec * MKT.zecUsd; };
+  var keyPrice = function () { return floorUsd() / S.per; };
+  var cap = function () { return S.nfts * S.per; };
+  var avail = function () { return cap() - S.sold; };
+  function toast(m, err) {
+    var t = $("toast");
+    t.textContent = m;
+    t.classList.toggle("err", !!err);
+    t.classList.add("show");
+    clearTimeout(t._t); t._t = setTimeout(function () { t.classList.remove("show"); }, 3200);
+  }
+
+  /* ── ERC-20 transfer encoding ── */
+  function toUnits(usdAmount, decimals) {
+    /* avoid float drift: work in integer minor units */
+    var scaled = Math.round(usdAmount * Math.pow(10, decimals));
+    return BigInt(scaled);
+  }
+  function erc20TransferData(to, units) {
+    var sel = "a9059cbb";                                     /* transfer(address,uint256) */
+    var addr = to.toLowerCase().replace(/^0x/, "").padStart(64, "0");
+    var amt = units.toString(16).padStart(64, "0");
+    return "0x" + sel + addr + amt;
+  }
+  function live() { return !!(VAULT_WALLET && USDC.address); }
+
+  /* ── wallet (EIP-1193) ── */
+  function short(a) { return a.slice(0, 6) + "…" + a.slice(-4); }
+  function setWallet(a) {
+    S.addr = a;
+    $("led").classList.toggle("off", !a);
+    $("wallet-lbl").textContent = a ? short(a) : "Connect wallet";
+    $("pos-addr").textContent = a ? short(a) : "Not connected";
+    $("pos-on").hidden = !a;
+    $("pos-off").hidden = !!a;
+    if (a) renderPos();
+  }
+  async function connect() {
+    var p = window.ethereum;
+    if (!p) {
+      toast("No wallet detected — open in a browser with a wallet extension", true);
+      return;
+    }
+    try {
+      var accts = await p.request({ method: "eth_requestAccounts" });
+      if (!accts || !accts.length) return;
+      setWallet(accts[0]);
+      var cid = await p.request({ method: "eth_chainId" });
+      if (CHAIN.id && cid !== CHAIN.id) {
+        try {
+          await p.request({ method: "wallet_switchEthereumChain", params: [{ chainId: CHAIN.id }] });
+        } catch (e) { toast("Switch to " + CHAIN.name + " to buy keys", true); }
+      }
+      toast("Connected " + short(accts[0]));
+    } catch (e) {
+      toast(e && e.code === 4001 ? "Connection rejected" : "Could not connect", true);
+    }
+  }
+  function disconnect() { setWallet(null); S.mine = 0; S.avg = 0; toast("Disconnected"); }
+  if (window.ethereum) {
+    window.ethereum.on && window.ethereum.on("accountsChanged", function (a) {
+      setWallet(a && a.length ? a[0] : null);
+    });
+    window.ethereum.on && window.ethereum.on("chainChanged", function () { location.reload(); });
+  }
+
+  /* ── router ── */
+  var V = { "/":"v-home", "/collection":"v-collection", "/vault":"v-vault",
+            "/token":"v-token", "/keys":"v-keys", "/docs":"v-docs" };
+  function route() {
+    var r = (location.hash || "#/").slice(1);
+    if (!V[r]) r = "/";
+    Object.keys(V).forEach(function (k) { $(V[k]).hidden = (k !== r); });
+    [].forEach.call(document.querySelectorAll(".top-b a"), function (a) {
+      a.classList.toggle("on", a.getAttribute("data-r") === r);
+    });
+    if (r === "/token") chart();
+    window.scrollTo(0, 0);
+  }
+
+  /* ── renderers ── */
+  function artHtml() {
+    return VAULT.map(function (v) {
+      return '<div class="art"><img src="data:image/png;base64,' + ART[v.id] +
+        '" alt="zkSNARKs #' + v.id + '" width="26" height="26">' +
+        '<div class="art-id">#' + v.id + '</div><div class="art-s">' + v.cost.toFixed(2) + ' ZEC</div>' +
+        '<span class="chip ' + (v.src === "k" ? 'chip-k">Key sales' : 'chip-f">Token fees') +
+        '</span></div>';
+    }).join("");
+  }
+
+  function renderMarket() {
+    $("c-at").textContent = MKT.at;
+    $("c-floor").textContent = usd(floorUsd(), 0);
+    $("c-floor-s").textContent = MKT.floorZec + " ZEC";
+    $("c-vol").textContent = "$" + (MKT.vol24hZec * MKT.zecUsd / 1e6).toFixed(2) + "M";
+    $("c-vol-s").textContent = num(Math.round(MKT.vol24hZec)) + " ZEC";
+    $("c-sales").textContent = num(MKT.sales24h);
+    $("c-sales-s").textContent = num(MKT.salesTotal) + " all time";
+    $("c-listed").textContent = num(MKT.listed);
+    $("c-zec").textContent = usd(MKT.zecUsd, 0);
+    $("c-mcap").textContent = "$" + (MKT.mcapZec * MKT.zecUsd / 1e6).toFixed(1) + "M";
+    $("c-med").textContent = MKT.medianZec;
+
+    var mx = Math.max.apply(null, DEPTH.map(function (d) { return d[1]; }));
+    $("c-depth").innerHTML = DEPTH.map(function (d) {
+      return '<div class="drow"><span>' + d[0] + '</span><span class="dbar"><i style="width:' +
+        (d[1] / mx * 100).toFixed(1) + '%"></i></span><span>' + d[1] + "</span></div>";
+    }).join("");
+
+    $("c-cheap").innerHTML = CHEAP.map(function (c) {
+      var o = (c[1] / MKT.floorZec - 1) * 100;
+      return '<tr><td class="t-id">#' + c[0] + '</td><td class="num t-v">' + c[1].toFixed(2) +
+        '</td><td class="num">' + usd(c[1] * MKT.zecUsd, 0) + '</td><td class="num">' +
+        (o < 0.05 ? "floor" : "+" + o.toFixed(0) + "%") + "</td></tr>";
+    }).join("");
+
+    $("c-feed").innerHTML = SALES.map(function (s) {
+      var ask = s[2] === "a";
+      return '<tr><td class="t-id">#' + s[0] + '</td><td class="num t-v">' + s[1] +
+        '</td><td class="num">' + usd(s[1] * MKT.zecUsd, 0) + '</td><td>' +
+        (ask ? '<span style="color:var(--accent)">ASK</span>' : '<span style="color:var(--amber)">OFFER</span>') +
+        '</td><td class="num">' + s[3] + "m</td></tr>";
+    }).join("");
+  }
+
+  function renderVault() {
+    var vUsd = S.nfts * floorUsd(), art = artHtml();
+    $("h-floor").textContent = usd(floorUsd(), 0);
+    $("h-kp").textContent = usd(keyPrice());
+    $("o-floor").textContent = usd(floorUsd(), 0);
+    $("o-floor-s").textContent = MKT.floorZec + " ZEC · " + num(MKT.listed) + " listed";
+    $("o-key").textContent = usd(keyPrice());
+    $("o-vault").textContent = S.nfts;
+    $("o-vault-s").textContent = usd(vUsd, 0) + " at floor";
+    $("o-avail").textContent = num(avail());
+    $("o-avail-s").textContent = "of " + num(cap()) + " cap";
+
+    $("vl-n").textContent = S.nfts;
+    $("vl-n-s").textContent = usd(vUsd, 0) + " at floor";
+    $("vl-cost").textContent = VAULT.reduce(function (a, v) { return a + v.cost; }, 0).toFixed(2);
+    $("vl-keys").textContent = num(S.sold);
+    $("vl-keys-s").textContent = "of " + num(cap()) + " cap";
+
+    $("k-price").textContent = usd(keyPrice());
+    $("k-nfts").textContent = S.nfts;
+    $("k-nfts-s").textContent = usd(vUsd, 0) + " at floor";
+    $("k-avail").textContent = num(avail());
+    $("k-avail-s").textContent = "of " + num(cap()) + " cap";
+
+    $("m-sold").textContent = num(S.sold);
+    $("m-cap").textContent = num(cap());
+    $("m-bar").style.width = (S.sold / cap() * 100).toFixed(1) + "%";
+    $("m-note").textContent = avail() === 0
+      ? "Sold out. No new keys until the vault buys its next piece — that adds 100 more."
+      : "Supply is hard-capped at 100 keys per NFT in the vault. It rises only when the vault buys another piece.";
+
+    var outstanding = S.sold * keyPrice();
+    $("vl-float").textContent = usd(S.float, 0);
+    $("vl-out").textContent = usd(outstanding, 0);
+    $("vl-out-s").textContent = num(S.sold) + " keys at floor";
+    $("vl-wallet").textContent = VAULT_WALLET ? short(VAULT_WALLET) : "Set at launch";
+    $("fl-amt").textContent = usd(S.float, 0);
+    $("fl-out").textContent = usd(outstanding, 0);
+    $("fl-bar").style.width = Math.min(100, outstanding ? S.float / outstanding * 100 : 100).toFixed(1) + "%";
+
+    $("o-art").innerHTML = art;
+    $("vl-art").innerHTML = art;
+    $("k-art").innerHTML = art;
+  }
+
+  function quote() {
+    var raw = parseFloat($("usdc-in").value);
+    if (!isFinite(raw) || raw < 0) raw = 0;
+    var k = Math.min(Math.floor(raw / keyPrice()), avail());
+    var tot = k * keyPrice();
+    $("r-keys").textContent = num(k);
+    $("r-pct").textContent = (k / S.per * 100).toFixed(2) + "%";
+    $("r-unit").textContent = usd(keyPrice());
+    $("r-total").textContent = usd(tot);
+    $("r-change").textContent = usd(Math.max(0, raw - tot));
+    $("r-after").textContent = num(S.mine + k) + " keys · " + ((S.mine + k) / S.per).toFixed(2) + " NFT";
+    var b = $("buy-btn");
+    b.disabled = k < 1 || !S.addr;
+    b.textContent = !S.addr ? "Connect wallet first"
+      : k < 1 ? (avail() < 1 ? "Sold out" : "Minimum " + usd(keyPrice()))
+      : "Pay " + usd(k * keyPrice()) + " for " + num(k) + (k === 1 ? " key" : " keys");
+    return k;
+  }
+
+  function renderPos() {
+    if (!S.addr) return;
+    var pct = S.mine / S.per, val = S.mine * keyPrice();
+    $("p-keys").textContent = num(S.mine);
+    $("p-val").textContent = usd(val);
+    $("p-pct").textContent = pct.toFixed(2);
+    $("p-bar").style.width = Math.min(100, pct * 100).toFixed(1) + "%";
+    $("p-avg").textContent = S.mine ? usd(S.avg) + " / key" : "—";
+    var basis = S.mine * S.avg, pnl = val - basis, el = $("p-pnl");
+    el.className = !S.mine ? "" : (pnl >= 0 ? "up" : "down");
+    el.textContent = !S.mine ? "—"
+      : (pnl >= 0 ? "+" : "−") + usd(Math.abs(pnl)) + " (" + (pnl >= 0 ? "+" : "−") +
+        (basis ? Math.abs(pnl / basis * 100).toFixed(1) : "0.0") + "%)";
+    var need = Math.max(0, S.per - S.mine);
+    $("p-need").textContent = need > 0 ? num(need) : "ready";
+    $("redeem-btn").disabled = need > 0;
+    $("sell-to").textContent = short(S.addr);
+    $("sell-in").max = S.mine;
+    var inst = $("p-instant");
+    inst.textContent = val <= S.float ? "Instant" : "Queued · 3–7 days";
+    inst.className = val <= S.float ? "up" : "warn";
+    sellQuote();
+  }
+
+  function renderAll() { renderVault(); renderPos(); quote(); }
+
+  /* ── chart ── */
+  var drawn = false;
+  function chart() {
+    if (drawn) return; drawn = true;
+    var W = 900, H = 190, PL = 8, PR = 64, PT = 14, PB = 24, n = 72, seed = 20260919, p = [], v = 5.2e-5;
+    for (var i = 0; i < n; i++) {
+      seed = (seed * 1103515245 + 12345) % 2147483648;
+      var r = seed / 2147483648 - .5, d = i < 14 ? .135 : (i < 30 ? -.028 : .021);
+      v = Math.max(2e-5, v * (1 + d + r * .11)); p.push(v);
+    }
+    p[n - 1] = 4.18e-4;
+    var mn = Math.min.apply(null, p), mx = Math.max.apply(null, p), pad = (mx - mn) * .14 || 1e-6;
+    mn -= pad; mx += pad;
+    var X = function (i) { return PL + i / (n - 1) * (W - PL - PR); };
+    var Y = function (q) { return PT + (1 - (q - mn) / (mx - mn)) * (H - PT - PB); };
+    var line = "";
+    for (var j = 0; j < n; j++) line += (j ? "L" : "M") + X(j).toFixed(1) + " " + Y(p[j]).toFixed(1) + " ";
+    var area = line + "L" + X(n - 1).toFixed(1) + " " + (H - PB) + " L" + PL + " " + (H - PB) + " Z";
+    var g = "", lab = "";
+    for (var k = 0; k < 4; k++) {
+      var gy = PT + k / 3 * (H - PT - PB), gv = mx - k / 3 * (mx - mn);
+      g += '<line x1="' + PL + '" y1="' + gy.toFixed(1) + '" x2="' + (W - PR) + '" y2="' + gy.toFixed(1) +
+           '" stroke="rgba(63,148,98,0.28)" stroke-width="1"/>';
+      lab += '<text x="' + (W - PR + 11) + '" y="' + (gy + 3.5).toFixed(1) +
+             '" fill="#3F9462" font-family="JetBrains Mono, monospace" font-size="10">$' + gv.toFixed(6) + "</text>";
+    }
+    $("chart").innerHTML =
+      '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="Sample token price, ending at $0.000418">' +
+      '<defs><linearGradient id="fg" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0%" stop-color="#5DFF8F" stop-opacity="0.28"/>' +
+      '<stop offset="100%" stop-color="#5DFF8F" stop-opacity="0"/></linearGradient></defs>' + g +
+      '<path d="' + area + '" fill="url(#fg)"/>' +
+      '<path d="' + line + '" fill="none" stroke="#5DFF8F" stroke-width="1.7" stroke-linejoin="round"/>' +
+      '<circle cx="' + X(n - 1).toFixed(1) + '" cy="' + Y(p[n - 1]).toFixed(1) + '" r="3.2" fill="#86FFB0"/>' +
+      lab +
+      '<text x="' + PL + '" y="' + (H - 7) + '" fill="#3F9462" font-family="JetBrains Mono, monospace" font-size="10">72H</text>' +
+      '<text x="' + (W - PR) + '" y="' + (H - 7) + '" fill="#3F9462" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10">NOW</text></svg>';
+  }
+
+  /* ── events ── */
+  $("usdc-in").addEventListener("input", quote);
+  [].forEach.call(document.querySelectorAll(".quick button"), function (b) {
+    b.addEventListener("click", function () {
+      var a = b.getAttribute("data-amt");
+      $("usdc-in").value = a === "max" ? Math.round(avail() * keyPrice())
+        : a === "floor" ? Math.round(floorUsd()) : a;
+      quote();
+    });
+  });
+  function credit(k, cost) {
+    S.avg = (S.mine * S.avg + cost) / (S.mine + k);
+    S.mine += k; S.sold += k; S.float += cost;
+    renderAll();
+  }
+
+  $("buy-btn").addEventListener("click", async function () {
+    if (!S.addr) { connect(); return; }
+    var k = quote(); if (k < 1) return;
+    var cost = k * keyPrice();
+
+    if (!live()) {
+      credit(k, cost);
+      toast("Demo · credited " + num(k) + " keys, no payment sent");
+      return;
+    }
+    var btn = $("buy-btn"), was = btn.textContent;
+    try {
+      btn.disabled = true; btn.textContent = "Confirm in wallet…";
+      var data = erc20TransferData(VAULT_WALLET, toUnits(cost, USDC.decimals));
+      var hash = await window.ethereum.request({
+        method: "eth_sendTransaction",
+        params: [{ from: S.addr, to: USDC.address, data: data, value: "0x0" }]
+      });
+      btn.textContent = "Waiting for confirmation…";
+      toast("Payment sent · " + hash.slice(0, 10) + "… keys credit once it confirms");
+      /* the backend watches the vault wallet and credits on confirmation */
+    } catch (e) {
+      toast(e && e.code === 4001 ? "Payment cancelled" : "Payment failed", true);
+    } finally {
+      btn.disabled = false; btn.textContent = was; quote();
+    }
+  });
+  $("redeem-btn").addEventListener("click", function () {
+    if (S.mine < S.per) return;
+    S.mine -= S.per; S.sold -= S.per; S.nfts -= 1; VAULT.pop();
+    renderAll();
+    toast("Redeemed 1 zkSNARK — enter your shielded address to receive it");
+  });
+  function sellQuote() {
+    var k = Math.min(Math.max(0, Math.floor(parseFloat($("sell-in").value) || 0)), S.mine);
+    var gross = k * keyPrice(), fee = gross * EXIT_FEE, net = gross - fee;
+    var instant = net <= S.float;
+    $("sell-gross").textContent = usd(gross);
+    $("sell-fee").textContent = usd(fee);
+    $("sell-net").textContent = usd(net);
+    var eta = $("sell-eta");
+    eta.textContent = k < 1 ? "—" : instant ? "Instant · paid from the float" : "3–7 days · exceeds the float";
+    eta.className = k < 1 ? "" : instant ? "up" : "warn";
+    var b = $("sell-btn");
+    b.disabled = k < 1;
+    b.textContent = k < 1 ? "Sell keys" : "Sell " + num(k) + (k === 1 ? " key" : " keys") + " · " + usd(net);
+    return { k: k, net: net, instant: instant };
+  }
+
+  $("sell-btn").addEventListener("click", function () {
+    var q = sellQuote(); if (q.k < 1) return;
+    S.mine -= q.k; S.sold -= q.k;
+    if (S.mine === 0) S.avg = 0;
+    if (q.instant) S.float -= q.net;
+    $("sell-in").value = 0;
+    renderAll();
+    toast(q.instant
+      ? "Sent " + usd(q.net) + " USDC to " + short(S.addr)
+      : "Queued " + usd(q.net) + " — settles in 3–7 days");
+  });
+  $("sell-in").addEventListener("input", sellQuote);
+  $("wallet-btn").addEventListener("click", function () { S.addr ? disconnect() : connect(); });
+  $("connect-btn").addEventListener("click", connect);
+  window.addEventListener("hashchange", route);
+
+  /* ── live data via the proxy ── */
+  function setLive(state, label) {
+    var el = $("live");
+    if (!el) return;
+    el.className = "live" + (state === "live" ? " on" : state === "err" ? " err" : "");
+    el.textContent = label;
+  }
+
+  async function loadLive() {
+    if (!API_BASE) { setLive("snap", "Snapshot"); return; }
+    try {
+      var r = await fetch(API_BASE.replace(/\/+$/, "") + "/summary", { cache: "no-store" });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      var d = await r.json();
+
+      MKT.floorZec = d.floor.zec;
+      MKT.zecUsd = d.rate.zecUsd;
+      MKT.supply = d.supply;
+      MKT.mcapZec = d.marketCap.zec;
+      MKT.sales24h = d.sales.day;
+      MKT.salesTotal = d.sales.total;
+      MKT.vol24hZec = d.volume.day.zec;
+      MKT.listed = d.listings.count;
+      MKT.medianZec = d.listings.medianZec;
+      MKT.at = new Date(d.at).toUTCString().replace(/^\w+, /, "").replace(" GMT", " UTC");
+
+      DEPTH = d.listings.depth.map(function (b) {
+        return [b.to === null ? b.from.toFixed(2) + "+" : b.from.toFixed(2) + "–" + b.to.toFixed(2), b.count];
+      });
+      CHEAP = d.listings.cheapest.map(function (c) { return [c.id, c.zec]; });
+      SALES = d.recentSales.map(function (s) { return [s.id, s.zec, s.via === "ask" ? "a" : "o", s.agoMin]; });
+
+      renderMarket();
+      renderAll();
+      setLive("live", "Live");
+    } catch (e) {
+      setLive("err", "Snapshot · proxy unreachable");
+    }
+  }
+
+  /* ── boot ── */
+  $("mark").innerHTML = markHtml(NAME, HL);
+  $("banner").innerHTML = blockArt(NAME, HL);
+  $("banner").setAttribute("aria-label", NAME);
+  [].forEach.call(document.querySelectorAll(".tk"), function (e) { e.textContent = "$" + TICKER; });
+  renderMarket();
+  setWallet(null);
+  renderAll();
+  route();
+  loadLive();
+  setInterval(loadLive, 30000);
+  if (window.ethereum && window.ethereum.request) {
+    window.ethereum.request({ method: "eth_accounts" }).then(function (a) {
+      if (a && a.length) setWallet(a[0]);
+    }).catch(function () {});
+  }
+})();
+</script>
