@@ -718,8 +718,9 @@
      USDC.address  the USDC contract on Robinhood Chain (6 decimals)
      Leave either blank and the site runs in demo mode: the buy button
      credits keys locally without moving any money. */
-  var VAULT_WALLET = "";
-  var USDC = { address: "", decimals: 6, symbol: "USDC" };
+  var VAULT_WALLET = "0xf87057c0bf24510140bB2b49B4045F3a04479474";
+  var USDC = { address: "0x80e0e24718dbFcad49ECAA6F1e6C89A190586cA8", decimals: 6, symbol: "USDC" };
+  var KEY_BASE = 10000; /* key count rides in the last 4 micro-units of the payment */
   var EXIT_FEE = 0.02;   /* 2% on sells */
 
   /* real snapshot · zilkroad.com API · 2026-09-19 20:50 UTC */
@@ -816,10 +817,12 @@
   }
 
   /* ── ERC-20 transfer encoding ── */
-  function toUnits(usdAmount, decimals) {
-    /* avoid float drift: work in integer minor units */
-    var scaled = Math.round(usdAmount * Math.pow(10, decimals));
-    return BigInt(scaled);
+  /* Round the price up to the nearest whole cent, then write the key count
+     into the four micro-unit digits underneath. Costs the buyer <1c and makes
+     the purchase self-describing on-chain, so no database is needed. */
+  function toUnits(usdAmount, keys) {
+    var cents = BigInt(Math.ceil(usdAmount * 100));
+    return cents * BigInt(KEY_BASE) + BigInt(keys);
   }
   function erc20TransferData(to, units) {
     var sel = "a9059cbb";                                     /* transfer(address,uint256) */
@@ -838,7 +841,7 @@
     $("pos-addr").textContent = a ? short(a) : "Not connected";
     $("pos-on").hidden = !a;
     $("pos-off").hidden = !!a;
-    if (a) { loadPending(); renderPos(); }
+    if (a) { loadPending(); renderPos(); loadChainBalance(); }
   }
   async function connect() {
     var p = window.ethereum;
@@ -1026,6 +1029,22 @@
 
   function renderAll() { renderVault(); renderPos(); quote(); }
 
+  /* The chain is the ledger: every payment into the vault is a permanent
+     Transfer log carrying its own key count. */
+  async function loadChainBalance() {
+    if (!S.addr) return;
+    try {
+      var r = await fetch((API_BASE || "/api") + "/balance?address=" + S.addr, { cache: "no-store" });
+      if (!r.ok) return;
+      var d = await r.json();
+      var soldOff = 0;
+      try { soldOff = JSON.parse(localStorage.getItem("sold_" + S.addr) || "0") || 0; } catch (e) {}
+      S.mine = Math.max(0, d.keys - soldOff);
+      S.avg = d.avgCost || 0;
+      renderAll();
+    } catch (e) {}
+  }
+
   /* ── chart ── */
   var drawn = false;
   function chart() {
@@ -1094,14 +1113,22 @@
     var btn = $("buy-btn"), was = btn.textContent;
     try {
       btn.disabled = true; btn.textContent = "Confirm in wallet…";
-      var data = erc20TransferData(VAULT_WALLET, toUnits(cost, USDC.decimals));
+      var data = erc20TransferData(VAULT_WALLET, toUnits(cost, k));
       var hash = await window.ethereum.request({
         method: "eth_sendTransaction",
         params: [{ from: S.addr, to: USDC.address, data: data, value: "0x0" }]
       });
-      btn.textContent = "Waiting for confirmation…";
-      toast("Payment sent · " + hash.slice(0, 10) + "… keys credit once it confirms");
-      /* the backend watches the vault wallet and credits on confirmation */
+      btn.textContent = "Confirming on-chain…";
+      toast("Payment sent · " + hash.slice(0, 10) + "… waiting for it to confirm");
+      var before = S.mine;
+      for (var t = 0; t < 40; t++) {
+        await new Promise(function (r) { setTimeout(r, 3000); });
+        await loadChainBalance();
+        if (S.mine > before) {
+          toast("Credited " + num(S.mine - before) + " keys");
+          break;
+        }
+      }
     } catch (e) {
       toast(e && e.code === 4001 ? "Payment cancelled" : "Payment failed", true);
     } finally {
@@ -1159,6 +1186,10 @@
 
     S.mine -= q.k; S.sold -= q.k;
     if (S.mine === 0) S.avg = 0;
+    try {
+      var so = JSON.parse(localStorage.getItem("sold_" + S.addr) || "0") || 0;
+      localStorage.setItem("sold_" + S.addr, JSON.stringify(so + q.k));
+    } catch (e) {}
     PENDING.push(req); savePending();
     $("sell-in").value = 0;
     renderAll();

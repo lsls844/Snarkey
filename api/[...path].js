@@ -44,6 +44,11 @@ export default async function handler(request) {
   const url = new URL(request.url);
   const path = url.pathname.replace(/^\/+/, "").replace(/^api\/?/, "").replace(/\/+$/, "");
 
+  if (path === "balance") {
+    try { return await handleBalance(url); }
+    catch (err) { return json({ error: "balance_failed", detail: String(err?.message || err) }, 502); }
+  }
+
   if (path === "sell") {
     if (request.method !== "POST") return json({ error: "use_post" }, 405);
     try { return await handleSell(request); }
@@ -253,4 +258,77 @@ async function handleSell(request) {
   }
 
   return json({ ok: true, ref, payoutUsd: usd, address });
+}
+
+
+/* ─────────────────────── on-chain key ledger ───────────────────────
+ * There is no database. Every USDC payment into the vault wallet is a
+ * permanent Transfer log, so the chain itself is the ledger.
+ *
+ * The key count rides along inside the payment amount. USDC has six
+ * decimals; the site rounds the price up to the nearest whole cent and
+ * writes the key count into the four micro-unit digits underneath:
+ *
+ *     18 keys at $10.30  ->  $185.40  ->  185400018 units
+ *                                                 ^^^^ = 18 keys
+ *
+ * So the number of keys bought is recoverable exactly, forever, with no
+ * storage and no trust — and it costs the buyer under a cent.
+ */
+const CHAIN_RPC = process.env.CHAIN_RPC || "https://rpc.mainnet.chain.robinhood.com";
+const USDC_ADDR = (process.env.USDC_ADDRESS || "0x80e0e24718dbfcad49ecaa6f1e6c89a190586ca8").toLowerCase();
+const VAULT_ADDR = (process.env.VAULT_WALLET || "0xf87057c0bf24510140bB2b49B4045F3a04479474").toLowerCase();
+const TRANSFER_TOPIC = "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef";
+const FROM_BLOCK = process.env.FROM_BLOCK || "0x0";
+const KEY_ENCODING_BASE = 10000; // last 4 micro-digits carry the key count
+
+async function rpc(method, params) {
+  const r = await fetch(CHAIN_RPC, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }),
+  });
+  const j = await r.json();
+  if (j.error) throw new Error(method + ": " + j.error.message);
+  return j.result;
+}
+
+const pad32 = (addr) => "0x" + "0".repeat(24) + addr.replace(/^0x/, "").toLowerCase();
+
+async function handleBalance(url) {
+  const address = String(url.searchParams.get("address") || "").toLowerCase();
+  if (!/^0x[a-f0-9]{40}$/.test(address)) return json({ error: "bad_address" }, 400);
+
+  const logs = await rpc("eth_getLogs", [{
+    fromBlock: FROM_BLOCK,
+    toBlock: "latest",
+    address: USDC_ADDR,
+    topics: [TRANSFER_TOPIC, pad32(address), pad32(VAULT_ADDR)],
+  }]);
+
+  const deposits = (logs || []).map((l) => {
+    const units = BigInt(l.data);
+    const keys = Number(units % BigInt(KEY_ENCODING_BASE));
+    const usd = Number(units - BigInt(keys)) / 1e6;
+    return {
+      tx: l.transactionHash,
+      block: parseInt(l.blockNumber, 16),
+      usd: Math.round(usd * 100) / 100,
+      keys,
+      pricePaid: keys ? Math.round((usd / keys) * 10000) / 10000 : null,
+    };
+  });
+
+  const totalKeys = deposits.reduce((a, d) => a + d.keys, 0);
+  const totalUsd = deposits.reduce((a, d) => a + d.usd, 0);
+
+  return json({
+    address,
+    vault: VAULT_ADDR,
+    keys: totalKeys,
+    spentUsd: Math.round(totalUsd * 100) / 100,
+    avgCost: totalKeys ? Math.round((totalUsd / totalKeys) * 100) / 100 : null,
+    deposits: deposits.sort((a, b) => b.block - a.block),
+    at: new Date().toISOString(),
+  }, 200, 5);
 }
