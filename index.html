@@ -1071,9 +1071,6 @@ var VAULT = [
     $("vl-out").textContent = usd(outstanding, 0);
     $("vl-out-s").textContent = num(S.sold) + " keys at floor";
     $("vl-wallet").textContent = VAULT_WALLET ? short(VAULT_WALLET) : "Set at launch";
-    $("fl-amt").textContent = usd(pendingTotal(), 0);
-    $("fl-out").textContent = usd(outstanding, 0);
-    $("fl-bar").style.width = Math.min(100, outstanding ? pendingTotal() / outstanding * 100 : 0).toFixed(1) + "%";
 
     var rowsHtml = VAULT.map(function (v) {
       return '<tr><td class="t-id">#' + v.id + '</td><td class="num">' + num(v.rank) +
