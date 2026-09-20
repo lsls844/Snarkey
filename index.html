@@ -224,6 +224,78 @@
   .foot-t{font-size:9.5px;letter-spacing:.17em;text-transform:uppercase;color:var(--amber);margin-bottom:9px}
   .foot p{margin:0;font-size:11px;color:var(--mid);line-height:1.75}
 
+  /* ── shine + glow ── */
+  .btn{position:relative;overflow:hidden;isolation:isolate}
+  .btn::after{
+    content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+    background:linear-gradient(105deg,transparent 38%,rgba(93,255,143,.30) 50%,transparent 62%);
+    transform:translateX(-140%);transition:transform .62s cubic-bezier(.4,0,.2,1);
+  }
+  .btn:hover::after{transform:translateX(140%)}
+  .btn:hover{box-shadow:0 0 22px -4px rgba(93,255,143,.55)}
+  .btn-solid::after{background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.55) 50%,transparent 62%)}
+  .btn-solid:hover{box-shadow:0 0 30px -4px rgba(93,255,143,.8)}
+
+  .quick button,.top-b a,.lk,.art,.step,.cell{position:relative;overflow:hidden}
+  .quick button::after,.lk::after,.art::after,.step::after,.cell::after{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(105deg,transparent 40%,rgba(93,255,143,.13) 50%,transparent 60%);
+    transform:translateX(-140%);transition:transform .7s cubic-bezier(.4,0,.2,1);
+  }
+  .quick button:hover::after,.lk:hover::after,.art:hover::after,.step:hover::after,.cell:hover::after{transform:translateX(140%)}
+  .quick button:hover,.art:hover{box-shadow:0 0 18px -6px rgba(93,255,143,.5)}
+  .lk:hover,.step:hover,.cell:hover{background:rgba(93,255,143,.035)}
+  .block,.inp{transition:border-color .25s,box-shadow .25s}
+  .block:hover{border-color:rgba(93,255,143,.28)}
+  .art{transition:transform .25s}
+  .art:hover{transform:translateY(-3px)}
+  .art:hover img{border-color:var(--accent);box-shadow:0 0 20px -4px rgba(93,255,143,.6)}
+  .art img{transition:border-color .25s,box-shadow .25s}
+
+  /* ── orbit ── */
+  .orbit-wrap{display:flex;flex-direction:column;align-items:center;padding:34px 0 10px}
+  .orbit{position:relative;width:min(482px,88vw);aspect-ratio:1;display:grid;place-items:center}
+  .ring{
+    position:absolute;border-radius:50%;border:1px solid rgba(93,255,143,.16);
+    box-shadow:0 0 34px -12px rgba(93,255,143,.4),inset 0 0 34px -18px rgba(93,255,143,.4);
+  }
+  .ring.r1{inset:0}
+  .ring.r2{inset:15.5%}
+  .ring.r3{inset:31%;border-color:rgba(93,255,143,.24)}
+  .spin{position:absolute;inset:0;animation:spin 46s linear infinite}
+  .spin.rev{inset:15.5%;animation-duration:34s;animation-direction:reverse}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .orb{
+    position:absolute;top:50%;left:50%;width:56px;height:56px;margin:-28px 0 0 -28px;
+    border-radius:50%;border:1px solid rgba(93,255,143,.45);background:#02150A;
+    display:grid;place-items:center;overflow:hidden;
+    box-shadow:0 0 20px -6px rgba(93,255,143,.6);
+  }
+  .orb img{width:100%;height:100%;image-rendering:pixelated;display:block}
+  .orb .anti{animation:spin 46s linear infinite reverse;width:100%;height:100%}
+  .spin.rev .orb .anti{animation-duration:34s;animation-direction:normal}
+  .core{
+    position:relative;z-index:3;width:47%;aspect-ratio:1;border-radius:50%;
+    display:grid;place-items:center;text-align:center;padding:10px;
+    background:radial-gradient(circle at 50% 38%,rgba(93,255,143,.18),rgba(0,0,0,.92) 68%);
+    border:1px solid rgba(93,255,143,.4);
+    box-shadow:0 0 70px -14px rgba(93,255,143,.6),inset 0 0 44px -14px rgba(93,255,143,.5);
+    animation:breathe 4.6s ease-in-out infinite;
+  }
+  @keyframes breathe{
+    0%,100%{box-shadow:0 0 70px -14px rgba(93,255,143,.6),inset 0 0 44px -14px rgba(93,255,143,.5)}
+    50%{box-shadow:0 0 104px -12px rgba(93,255,143,.85),inset 0 0 58px -14px rgba(93,255,143,.7)}
+  }
+  .core-k{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--mid);margin-bottom:9px}
+  .core-v{font-size:clamp(26px,5.2vw,40px);line-height:1;color:var(--accent);text-shadow:0 0 26px rgba(93,255,143,.75)}
+  .core-s{font-size:10.5px;color:var(--mid);margin-top:9px;letter-spacing:.05em}
+  .orbit-cap{
+    margin-top:22px;text-align:center;font-size:11px;letter-spacing:.17em;text-transform:uppercase;color:var(--mid);
+  }
+  .orbit-cap b{color:var(--accent);font-weight:400}
+  @media (max-width:560px){ .orb{width:42px;height:42px;margin:-21px 0 0 -21px} }
+  @media (prefers-reduced-motion:reduce){ .spin,.core{animation:none} }
+
   .pend-hd{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);margin:18px 0 8px}
   .pend{display:flex;justify-content:space-between;gap:12px;padding:8px 10px;margin-bottom:6px;
     border:1px solid rgba(244,183,40,.3);background:rgba(244,183,40,.06);font-size:11px;color:var(--ink-2, #9DABC6)}
@@ -284,17 +356,27 @@
       <pre class="banner" id="banner" aria-label="KEYVAULT"></pre>
       <p class="hero-lead">One key is one percent of one zkSNARK.</p>
       <p class="hero-body">
-        The floor is <b id="h-floor">$1,332</b>. Most people cannot buy in at that price. A key costs
-        <b id="h-kp">$13.32</b> — paid in USDC, backed by a zkSNARK the vault actually holds on Zcash.
-        Collect one hundred and redeem them for a whole piece.
-      </p>
-      <p class="hero-body">
-        Supply is capped at one hundred keys per NFT in the vault. No key exists without an
-        NFT behind it, and the vault's viewing key is published so anyone can check.
+        Backed by NFTs the vault actually holds. Collect 100, redeem a whole piece.
       </p>
       <div class="hero-cta">
-        <a class="btn btn-solid" href="#/keys">Buy keys</a>
+        <a class="btn btn-solid" href="#keys-buy">Buy keys</a>
         <a class="btn" href="#/vault">Inspect the vault</a>
+      </div>
+
+      <div class="orbit-wrap">
+        <div class="orbit" id="orbit">
+          <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
+          <div class="spin" id="spin-out"></div>
+          <div class="spin rev" id="spin-in"></div>
+          <div class="core">
+            <div>
+              <div class="core-k">Vault value</div>
+              <div class="core-v" id="core-v">$0</div>
+              <div class="core-s" id="core-s">0 zkSNARKs held</div>
+            </div>
+          </div>
+        </div>
+        <p class="orbit-cap">100% of fees &rarr; <b>buybacks</b> &rarr; more NFTs behind every key</p>
       </div>
     </div>
 
@@ -305,6 +387,92 @@
         <div class="cell"><div class="c-k">Price of<br>one key</div><div class="c-v" id="o-key">$13.32</div><div class="c-s">1% of the floor, always</div></div>
         <div class="cell"><div class="c-k">zkSNARKs<br>in the vault</div><div class="c-v" id="o-vault">5</div><div class="c-s" id="o-vault-s">$6,658 at floor</div></div>
         <div class="cell"><div class="c-k">Keys available<br>to issue</div><div class="c-v" id="o-avail">182</div><div class="c-s" id="o-avail-s">of 500 cap</div></div>
+      </div>
+    </section>
+
+    <section id="keys-buy">
+      <p class="sec-k">Buy keys</p>
+      <div class="cols">
+        <div class="block">
+          <div class="block-hd"><span class="block-t">Buy keys</span><span class="block-n">Pay in USDC</span></div>
+          <div class="block-bd">
+            <label class="lbl" for="usdc-in">How many keys</label>
+            <div class="inp">
+              <input id="usdc-in" type="number" min="1" step="1" value="10" inputmode="numeric" aria-label="Number of keys">
+              <span class="inp-u">KEYS</span>
+            </div>
+            <div class="quick">
+              <button type="button" data-amt="1">1</button>
+              <button type="button" data-amt="5">5</button>
+              <button type="button" data-amt="10">10</button>
+              <button type="button" data-amt="25">25</button>
+              <button type="button" data-amt="100">100 · 1 whole NFT</button>
+              <button type="button" data-amt="max">Max</button>
+            </div>
+
+            <div class="to">↓</div>
+
+            <div class="out">
+              <div class="out-top">
+                <span class="out-n" id="r-keys">$0.00</span>
+                <span class="out-u">USDC</span>
+                <span class="out-eq">for <b id="r-pct">10.00%</b> of one zkSNARK</span>
+              </div>
+              <dl class="rows">
+                <div class="row"><dt>Price per key</dt><dd id="r-unit"></dd></div>
+                <div class="row"><dt>Keys</dt><dd id="r-total"></dd></div>
+                <div class="row"><dt>Exact amount sent</dt><dd id="r-change"></dd></div>
+                <div class="row"><dt>Your position after</dt><dd id="r-after"></dd></div>
+              </dl>
+            </div>
+
+            <div class="meter">
+              <div class="meter-t"><span>Key supply issued</span><span><b id="m-sold">318</b> / <span id="m-cap">500</span></span></div>
+              <div class="bar"><i id="m-bar" style="width:63.6%"></i></div>
+              <p class="note" id="m-note"></p>
+            </div>
+
+            <div class="cta"><button class="btn btn-solid" id="buy-btn" type="button">Buy 18 keys</button></div>
+          </div>
+        </div>
+
+        <div class="block">
+          <div class="block-hd"><span class="block-t">Your position</span><span class="block-n" id="pos-addr">Not connected</span></div>
+          <div class="block-bd" id="pos-on" hidden>
+            <div class="pos-line"><span class="pos-num" id="p-keys">0</span><span class="pos-u">Keys</span></div>
+            <div class="pos-sub"><span id="p-val"></span> at floor · <b id="p-pct"></b> of a zkSNARK</div>
+            <dl class="rows" style="padding:0 0 4px">
+              <div class="row"><dt>Average cost</dt><dd id="p-avg"></dd></div>
+              <div class="row"><dt>Unrealised</dt><dd id="p-pnl"></dd></div>
+              <div class="row"><dt>Pending payout</dt><dd id="p-instant">None</dd></div>
+            </dl>
+            <div class="rd">
+              <div class="rd-hd"><span>Sell keys</span><span>Paid in USDC to <b id="sell-to">your wallet</b></span></div>
+              <div class="inp">
+                <input id="sell-in" type="number" min="0" step="1" value="0" inputmode="numeric" aria-label="Keys to sell">
+                <span class="inp-u">KEYS</span>
+              </div>
+              <dl class="rows" style="padding:10px 0 4px">
+                <div class="row"><dt>Value at floor</dt><dd id="sell-gross">$0.00</dd></div>
+                <div class="row"><dt>Exit fee (2%)</dt><dd id="sell-fee">$0.00</dd></div>
+                <div class="row"><dt>You receive</dt><dd id="sell-net">$0.00</dd></div>
+                <div class="row"><dt>Settlement</dt><dd id="sell-eta">&mdash;</dd></div>
+              </dl>
+              <div class="cta"><button class="btn" id="sell-btn" type="button" disabled>Request payout</button></div>
+              <div id="pending-list"></div>
+            </div>
+
+            <div class="rd">
+              <div class="rd-hd"><span>Redeem a whole NFT</span><span><b id="p-need">100</b> keys to go</span></div>
+              <div class="bar"><i class="dim" id="p-bar" style="width:0%"></i></div>
+              <div class="cta"><button class="btn" id="redeem-btn" type="button" disabled>Redeem 100 keys</button></div>
+            </div>
+          </div>
+          <div class="empty" id="pos-off">
+            <p>No wallet connected.<br>Connect to buy keys, sell them, or redeem.</p>
+            <button class="btn btn-solid" id="connect-btn" type="button">Connect wallet</button>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -495,97 +663,17 @@
       <p>One key is 1% of one zkSNARK, priced off the live Zilkroad floor and paid in USDC. Supply is hard-capped at 100 keys per NFT the vault actually holds.</p>
     </div>
 
-    <section style="margin-top:0">
-      <div class="grid g4">
-        <div class="cell"><div class="c-k">Price of<br>one key</div><div class="c-v" id="k-price"></div><div class="c-s">1% of the floor, always</div></div>
-        <div class="cell"><div class="c-k">zkSNARKs<br>in the vault</div><div class="c-v pale" id="k-nfts"></div><div class="c-s" id="k-nfts-s"></div></div>
-        <div class="cell"><div class="c-k">Keys available<br>to issue</div><div class="c-v pale" id="k-avail"></div><div class="c-s" id="k-avail-s"></div></div>
-        <div class="cell"><div class="c-k">Backing<br>ratio</div><div class="c-v">100%</div><div class="c-s">1 key = 1% of a real NFT</div></div>
-      </div>
-    </section>
 
     <section>
-      <div class="cols">
-        <div class="block">
-          <div class="block-hd"><span class="block-t">Buy keys</span><span class="block-n">Pay in USDC</span></div>
-          <div class="block-bd">
-            <label class="lbl" for="usdc-in">How many keys</label>
-            <div class="inp">
-              <input id="usdc-in" type="number" min="1" step="1" value="10" inputmode="numeric" aria-label="Number of keys">
-              <span class="inp-u">KEYS</span>
-            </div>
-            <div class="quick">
-              <button type="button" data-amt="1">1</button>
-              <button type="button" data-amt="5">5</button>
-              <button type="button" data-amt="10">10</button>
-              <button type="button" data-amt="25">25</button>
-              <button type="button" data-amt="100">100 · 1 whole NFT</button>
-              <button type="button" data-amt="max">Max</button>
-            </div>
-
-            <div class="to">↓</div>
-
-            <div class="out">
-              <div class="out-top">
-                <span class="out-n" id="r-keys">$0.00</span>
-                <span class="out-u">USDC</span>
-                <span class="out-eq">for <b id="r-pct">10.00%</b> of one zkSNARK</span>
-              </div>
-              <dl class="rows">
-                <div class="row"><dt>Price per key</dt><dd id="r-unit"></dd></div>
-                <div class="row"><dt>Keys</dt><dd id="r-total"></dd></div>
-                <div class="row"><dt>Exact amount sent</dt><dd id="r-change"></dd></div>
-                <div class="row"><dt>Your position after</dt><dd id="r-after"></dd></div>
-              </dl>
-            </div>
-
-            <div class="meter">
-              <div class="meter-t"><span>Key supply issued</span><span><b id="m-sold">318</b> / <span id="m-cap">500</span></span></div>
-              <div class="bar"><i id="m-bar" style="width:63.6%"></i></div>
-              <p class="note" id="m-note"></p>
-            </div>
-
-            <div class="cta"><button class="btn btn-solid" id="buy-btn" type="button">Buy 18 keys</button></div>
-          </div>
-        </div>
-
-        <div class="block">
-          <div class="block-hd"><span class="block-t">Your position</span><span class="block-n" id="pos-addr">Not connected</span></div>
-          <div class="block-bd" id="pos-on" hidden>
-            <div class="pos-line"><span class="pos-num" id="p-keys">0</span><span class="pos-u">Keys</span></div>
-            <div class="pos-sub"><span id="p-val"></span> at floor · <b id="p-pct"></b> of a zkSNARK</div>
-            <dl class="rows" style="padding:0 0 4px">
-              <div class="row"><dt>Average cost</dt><dd id="p-avg"></dd></div>
-              <div class="row"><dt>Unrealised</dt><dd id="p-pnl"></dd></div>
-              <div class="row"><dt>Pending payout</dt><dd id="p-instant">None</dd></div>
-            </dl>
-            <div class="rd">
-              <div class="rd-hd"><span>Sell keys</span><span>Paid in USDC to <b id="sell-to">your wallet</b></span></div>
-              <div class="inp">
-                <input id="sell-in" type="number" min="0" step="1" value="0" inputmode="numeric" aria-label="Keys to sell">
-                <span class="inp-u">KEYS</span>
-              </div>
-              <dl class="rows" style="padding:10px 0 4px">
-                <div class="row"><dt>Value at floor</dt><dd id="sell-gross">$0.00</dd></div>
-                <div class="row"><dt>Exit fee (2%)</dt><dd id="sell-fee">$0.00</dd></div>
-                <div class="row"><dt>You receive</dt><dd id="sell-net">$0.00</dd></div>
-                <div class="row"><dt>Settlement</dt><dd id="sell-eta">&mdash;</dd></div>
-              </dl>
-              <div class="cta"><button class="btn" id="sell-btn" type="button" disabled>Request payout</button></div>
-              <div id="pending-list"></div>
-            </div>
-
-            <div class="rd">
-              <div class="rd-hd"><span>Redeem a whole NFT</span><span><b id="p-need">100</b> keys to go</span></div>
-              <div class="bar"><i class="dim" id="p-bar" style="width:0%"></i></div>
-              <div class="cta"><button class="btn" id="redeem-btn" type="button" disabled>Redeem 100 keys</button></div>
-            </div>
-          </div>
-          <div class="empty" id="pos-off">
-            <p>No wallet connected.<br>Connect to buy keys, sell them, or redeem.</p>
-            <button class="btn btn-solid" id="connect-btn" type="button">Connect wallet</button>
-          </div>
-        </div>
+      <p class="sec-k">Key price &amp; supply</p>
+      <div class="grid g4">
+        <div class="cell"><div class="c-k">Price of<br>one key</div><div class="c-v" id="k2-price"></div><div class="c-s">1% of the floor, always</div></div>
+        <div class="cell"><div class="c-k">zkSNARKs<br>in the vault</div><div class="c-v pale" id="k2-nfts"></div><div class="c-s" id="k2-nfts-s"></div></div>
+        <div class="cell"><div class="c-k">Keys available<br>to issue</div><div class="c-v pale" id="k2-avail"></div><div class="c-s" id="k2-avail-s"></div></div>
+        <div class="cell"><div class="c-k">Backing<br>ratio</div><div class="c-v">100%</div><div class="c-s">1 key = 1% of a real NFT</div></div>
+      </div>
+      <div class="cta" style="margin-top:20px;max-width:340px">
+        <a class="btn btn-solid" href="#keys-buy">Buy keys</a>
       </div>
     </section>
 
@@ -877,14 +965,23 @@
   var V = { "/":"v-home", "/collection":"v-collection", "/vault":"v-vault",
             "/token":"v-token", "/keys":"v-keys", "/docs":"v-docs" };
   function route() {
-    var r = (location.hash || "#/").slice(1);
+    var h = location.hash || "#/";
+    if (h.indexOf("/") !== 1) {                 /* plain in-page anchor, e.g. #keys-buy */
+      var el = document.getElementById(h.slice(1));
+      if (el) { showView("/"); el.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+    }
+    var r = h.slice(1);
     if (!V[r]) r = "/";
+    showView(r);
+    if (r === "/token") chart();
+    window.scrollTo(0, 0);
+  }
+
+  function showView(r) {
     Object.keys(V).forEach(function (k) { $(V[k]).hidden = (k !== r); });
     [].forEach.call(document.querySelectorAll(".top-b a"), function (a) {
       a.classList.toggle("on", a.getAttribute("data-r") === r);
     });
-    if (r === "/token") chart();
-    window.scrollTo(0, 0);
   }
 
   /* ── renderers ── */
@@ -935,8 +1032,6 @@
 
   function renderVault() {
     var vUsd = S.nfts * floorUsd(), art = artHtml();
-    $("h-floor").textContent = usd(floorUsd(), 0);
-    $("h-kp").textContent = usd(keyPrice());
     $("o-floor").textContent = usd(floorUsd(), 0);
     $("o-floor-s").textContent = MKT.floorZec + " ZEC · " + num(MKT.listed) + " listed";
     $("o-key").textContent = usd(keyPrice());
@@ -951,11 +1046,16 @@
     $("vl-keys").textContent = num(S.sold);
     $("vl-keys-s").textContent = "of " + num(cap()) + " cap";
 
-    $("k-price").textContent = usd(keyPrice());
-    $("k-nfts").textContent = S.nfts;
-    $("k-nfts-s").textContent = usd(vUsd, 0) + " at floor";
-    $("k-avail").textContent = num(avail());
-    $("k-avail-s").textContent = "of " + num(cap()) + " cap";
+    $("k2-price").textContent = usd(keyPrice());
+    $("k2-nfts").textContent = S.nfts;
+    $("k2-nfts-s").textContent = usd(vUsd, 0) + " at floor";
+    $("k2-avail").textContent = num(avail());
+    $("k2-avail-s").textContent = "of " + num(cap()) + " cap";
+
+    /* orbit centre + the NFTs riding the rings */
+    $("core-v").textContent = usd(vUsd, 0);
+    $("core-s").textContent = num(S.nfts) + (S.nfts === 1 ? " zkSNARK held" : " zkSNARKs held");
+    buildOrbit();
 
     $("m-sold").textContent = num(S.sold);
     $("m-cap").textContent = num(cap());
@@ -1030,6 +1130,24 @@
     inst.textContent = pend > 0 ? usd(pend) + " · pending" : "None";
     inst.className = pend > 0 ? "warn" : "";
     sellQuote();
+  }
+
+  /* NFT thumbnails placed around the rings; the counter-rotation keeps
+     each piece upright while its ring turns. */
+  function buildOrbit() {
+    var outer = $("spin-out"), inner = $("spin-in");
+    if (!outer || !inner) return;
+    var split = Math.ceil(VAULT.length / 2);
+    [[outer, VAULT.slice(0, split), 50], [inner, VAULT.slice(split), 50]].forEach(function (grp) {
+      var host = grp[0], items = grp[1], pct = grp[2];
+      if (!items.length) { host.innerHTML = ""; return; }
+      host.innerHTML = items.map(function (v, i) {
+        var deg = (360 / items.length) * i;
+        return '<span class="orb" style="transform:rotate(' + deg + 'deg) translate(' + pct +
+          '%) rotate(' + (-deg) + 'deg)"><span class="anti"><img src="data:image/png;base64,' +
+          ART[v.id] + '" alt="zkSNARKs #' + v.id + '" width="26" height="26"></span></span>';
+      }).join("");
+    });
   }
 
   function renderAll() { renderVault(); renderPos(); quote(); }
