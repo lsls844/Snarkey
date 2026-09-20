@@ -266,7 +266,7 @@
   .spin.rev{inset:15.5%;animation-duration:34s;animation-direction:reverse}
   @keyframes spin{to{transform:rotate(360deg)}}
   .orb{
-    position:absolute;top:50%;left:50%;width:56px;height:56px;margin:-28px 0 0 -28px;
+    position:absolute;top:50%;left:50%;width:52px;height:52px;margin:-26px 0 0 -26px;
     border-radius:50%;border:1px solid rgba(93,255,143,.45);background:#02150A;
     display:grid;place-items:center;overflow:hidden;
     box-shadow:0 0 20px -6px rgba(93,255,143,.6);
@@ -275,7 +275,7 @@
   .orb .anti{animation:spin 46s linear infinite reverse;width:100%;height:100%}
   .spin.rev .orb .anti{animation-duration:34s;animation-direction:normal}
   .core{
-    position:relative;z-index:3;width:47%;aspect-ratio:1;border-radius:50%;
+    position:relative;z-index:3;width:44%;aspect-ratio:1;border-radius:50%;
     display:grid;place-items:center;text-align:center;padding:10px;
     background:radial-gradient(circle at 50% 38%,rgba(93,255,143,.18),rgba(0,0,0,.92) 68%);
     border:1px solid rgba(93,255,143,.4);
@@ -287,7 +287,7 @@
     50%{box-shadow:0 0 104px -12px rgba(93,255,143,.85),inset 0 0 58px -14px rgba(93,255,143,.7)}
   }
   .core-k{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--mid);margin-bottom:9px}
-  .core-v{font-size:clamp(26px,5.2vw,40px);line-height:1;color:var(--accent);text-shadow:0 0 26px rgba(93,255,143,.75)}
+  .core-v{font-size:clamp(22px,4.3vw,34px);line-height:1;color:var(--accent);text-shadow:0 0 26px rgba(93,255,143,.75)}
   .core-s{font-size:10.5px;color:var(--mid);margin-top:9px;letter-spacing:.05em}
   .orbit-cap{
     margin-top:22px;text-align:center;font-size:11px;letter-spacing:.17em;text-transform:uppercase;color:var(--mid);
@@ -1136,19 +1136,31 @@
      each piece upright while its ring turns. */
   function buildOrbit() {
     var outer = $("spin-out"), inner = $("spin-in");
-    if (!outer || !inner) return;
+    if (!outer || !inner || !VAULT.length) return;
     var split = Math.ceil(VAULT.length / 2);
-    [[outer, VAULT.slice(0, split), 50], [inner, VAULT.slice(split), 50]].forEach(function (grp) {
-      var host = grp[0], items = grp[1], pct = grp[2];
+
+    [[outer, VAULT.slice(0, split)], [inner, VAULT.slice(split)]].forEach(function (grp) {
+      var host = grp[0], items = grp[1];
       if (!items.length) { host.innerHTML = ""; return; }
+      /* percentages in translate() resolve against the element itself, so the
+         radius has to be measured from the ring this group sits on. */
+      var radius = host.clientWidth / 2;
+      if (!radius) return;
       host.innerHTML = items.map(function (v, i) {
         var deg = (360 / items.length) * i;
-        return '<span class="orb" style="transform:rotate(' + deg + 'deg) translate(' + pct +
-          '%) rotate(' + (-deg) + 'deg)"><span class="anti"><img src="data:image/png;base64,' +
-          ART[v.id] + '" alt="zkSNARKs #' + v.id + '" width="26" height="26"></span></span>';
+        return '<span class="orb" style="transform:rotate(' + deg + 'deg) translate(' +
+          radius.toFixed(1) + 'px) rotate(' + (-deg) + 'deg)">' +
+          '<span class="anti"><img src="data:image/png;base64,' + ART[v.id] +
+          '" alt="zkSNARKs #' + v.id + '" width="26" height="26"></span></span>';
       }).join("");
     });
   }
+
+  var orbitTimer;
+  window.addEventListener("resize", function () {
+    clearTimeout(orbitTimer);
+    orbitTimer = setTimeout(buildOrbit, 150);
+  });
 
   function renderAll() { renderVault(); renderPos(); quote(); }
 
