@@ -982,6 +982,8 @@
     [].forEach.call(document.querySelectorAll(".top-b a"), function (a) {
       a.classList.toggle("on", a.getAttribute("data-r") === r);
     });
+    /* the rings can only be measured once the view is actually on screen */
+    if (r === "/") requestAnimationFrame(buildOrbit);
   }
 
   /* ── renderers ── */
@@ -1378,6 +1380,9 @@
   setWallet(null);
   renderAll();
   route();
+  requestAnimationFrame(buildOrbit);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(buildOrbit);
+  window.addEventListener("load", buildOrbit);
   loadLive();
   setInterval(loadLive, 30000);
   /* Deliberately no wallet call on page load — nothing touches the wallet
