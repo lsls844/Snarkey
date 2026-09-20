@@ -1,6 +1,6 @@
-<title>ZKEYSNARKS Key Vault</title>
+<title>SNARKEY</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
   :root{
     --bg:#000;
@@ -14,12 +14,14 @@
     --line:rgba(63,148,98,.30);
     --line-hi:rgba(93,255,143,.55);
     --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+    --disp:"Orbitron","Chakra Petch",system-ui,sans-serif;
+    --ui:"Chakra Petch","Helvetica Neue",Arial,sans-serif;
     color-scheme:dark;
   }
   *{box-sizing:border-box}
   body{
     margin:0;background:var(--bg);color:var(--ink);
-    font-family:var(--mono);font-size:13px;line-height:1.75;
+    font-family:var(--ui);font-size:13.5px;line-height:1.72;
     -webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums;
     overflow-x:hidden;
   }
@@ -29,7 +31,7 @@
   /* ── chrome ── */
   .top{border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);background:#000;z-index:50}
   .top-a{max-width:1180px;margin:0 auto;padding:18px 22px 14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-  .mark{font-size:15px;letter-spacing:.24em;font-weight:500;color:var(--ink)}
+  .mark{font-family:var(--disp);font-size:15px;letter-spacing:.2em;font-weight:700;color:var(--ink)}
   .tagword{font-size:10px;letter-spacing:.14em;color:var(--mid)}
   .spacer{margin-left:auto}
   .top-b{max-width:1180px;margin:0 auto;padding:0 22px 13px;display:flex;gap:26px;flex-wrap:wrap}
@@ -42,7 +44,7 @@
   .top-b a:focus-visible{outline:1px solid var(--accent);outline-offset:3px}
 
   .btn{
-    font-family:var(--mono);font-size:11px;letter-spacing:.17em;text-transform:uppercase;
+    font-family:var(--disp);font-weight:600;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
     padding:9px 17px;border:1px solid var(--line-hi);background:transparent;color:var(--ink);
     cursor:pointer;transition:background .15s,color .15s,border-color .15s;
     display:inline-flex;align-items:center;gap:8px;text-decoration:none;
@@ -58,8 +60,8 @@
 
   /* ── banner ── */
   .banner{
-    font-size:clamp(4.6px,1.42vw,12.5px);line-height:1.02;letter-spacing:0;
-    color:#FFFFFF;margin:0;white-space:pre;overflow-x:auto;
+    font-size:clamp(3.6px,1.26vw,10.5px);line-height:1.02;letter-spacing:0;
+    color:#FFFFFF;margin:0;white-space:pre;overflow:hidden;max-width:100%;
     font-weight:400;
   }
   .banner .hl,.mark .hl{color:var(--accent)}
@@ -70,23 +72,24 @@
   }
   .live.on{color:var(--accent);border-color:rgba(93,255,143,.45)}
   .live.err{color:var(--amber);border-color:rgba(244,183,40,.45)}
-  .hero{padding-block:54px 0}
+  .hero{padding-block:26px 0}
   .hero-lead{
-    font-size:clamp(16px,2.3vw,23px);line-height:1.5;color:var(--ink);
-    margin:38px 0 0;max-width:34ch;
+    font-family:var(--disp);font-weight:600;letter-spacing:.02em;
+    font-size:clamp(15px,2vw,21px);line-height:1.5;color:var(--ink);
+    margin:20px 0 0;max-width:34ch;
   }
-  .hero-body{color:var(--mid);max-width:74ch;margin:22px 0 0}
+  .hero-body{color:var(--mid);max-width:74ch;margin:12px 0 0}
   .hero-body b{color:var(--ink);font-weight:400}
-  .hero-cta{display:flex;gap:11px;flex-wrap:wrap;margin-top:34px}
+  .hero-cta{display:flex;gap:11px;flex-wrap:wrap;margin-top:20px}
 
   /* ── sections ── */
-  section{margin-top:58px}
+  section{margin-top:46px}
   .sec-k{
     font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mid);
     margin:0 0 20px;padding-bottom:14px;border-bottom:1px solid var(--line);
   }
-  h2{font-size:clamp(19px,2.6vw,26px);font-weight:400;letter-spacing:.02em;margin:0 0 14px;color:var(--ink)}
-  h3{font-size:13px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;margin:0 0 9px;color:var(--ink)}
+  h2{font-family:var(--disp);font-size:clamp(19px,2.6vw,26px);font-weight:700;letter-spacing:.04em;margin:0 0 14px;color:var(--ink);text-transform:uppercase}
+  h3{font-family:var(--disp);font-size:12.5px;font-weight:600;letter-spacing:.11em;text-transform:uppercase;margin:0 0 9px;color:var(--ink)}
   .page-hd{padding-block:46px 0;margin-bottom:40px}
   .page-hd p{color:var(--mid);max-width:76ch;margin:0}
 
@@ -97,7 +100,7 @@
   .cell{padding:22px 24px 26px;border-bottom:1px solid var(--line);border-left:1px solid var(--line)}
   .cell:first-child,.g4 .cell:nth-child(4n+1),.g3 .cell:nth-child(3n+1){border-left:0}
   .c-k{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--mid);line-height:1.5;margin-bottom:14px;min-height:2.9em}
-  .c-v{font-size:clamp(22px,3vw,30px);line-height:1;color:var(--accent);font-weight:400}
+  .c-v{font-family:var(--disp);font-size:clamp(20px,2.7vw,27px);line-height:1;color:var(--accent);font-weight:600;letter-spacing:.01em}
   .c-v.pale{color:var(--ink)}
   .c-s{font-size:10.5px;color:var(--mid);margin-top:10px;letter-spacing:.04em}
   .up{color:var(--accent)}.down{color:var(--red)}.warn{color:var(--amber)}
@@ -105,7 +108,7 @@
   /* ── blocks ── */
   .block{border:1px solid var(--line)}
   .block-hd{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;gap:14px;align-items:center;flex-wrap:wrap}
-  .block-t{font-size:11px;letter-spacing:.17em;text-transform:uppercase;color:var(--ink)}
+  .block-t{font-family:var(--disp);font-weight:600;font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--ink)}
   .block-n{font-size:10.5px;color:var(--mid);margin-left:auto;letter-spacing:.04em}
   .block-bd{padding:22px 20px}
   .cols{display:grid;grid-template-columns:1.1fr .9fr;gap:20px;align-items:start}
@@ -117,7 +120,7 @@
   .inp:focus-within{border-color:var(--accent)}
   .inp input{
     flex:1;min-width:0;background:transparent;border:0;color:var(--accent);
-    font-family:var(--mono);font-size:26px;padding:14px 16px;font-variant-numeric:tabular-nums;
+    font-family:var(--disp);font-weight:700;font-size:26px;padding:14px 16px;font-variant-numeric:tabular-nums;
   }
   .inp input:focus{outline:none}
   .inp-u{display:flex;align-items:center;padding:0 17px;border-left:1px solid var(--line);font-size:11px;letter-spacing:.15em;color:var(--mid)}
@@ -129,7 +132,7 @@
 
   .out{border:1px solid var(--line-hi)}
   .out-top{padding:19px 20px 16px;border-bottom:1px solid var(--line);display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
-  .out-n{font-size:38px;line-height:1;color:var(--accent)}
+  .out-n{font-family:var(--disp);font-weight:700;font-size:34px;line-height:1;color:var(--accent)}
   .out-u{font-size:11px;letter-spacing:.17em;text-transform:uppercase;color:var(--mid)}
   .out-eq{margin-left:auto;font-size:11px;color:var(--mid);text-align:right}
   .out-eq b{color:var(--ink);font-weight:400}
@@ -150,7 +153,7 @@
   .cta .btn{flex:1;min-width:140px;justify-content:center}
 
   /* ── position ── */
-  .pos-num{font-size:48px;line-height:1;color:var(--accent)}
+  .pos-num{font-family:var(--disp);font-weight:700;font-size:44px;line-height:1;color:var(--accent)}
   .pos-line{display:flex;align-items:flex-end;gap:13px;margin-bottom:9px}
   .pos-u{font-size:10px;letter-spacing:.17em;text-transform:uppercase;color:var(--mid);padding-bottom:8px}
   .pos-sub{font-size:11px;color:var(--mid);margin-bottom:18px}
@@ -217,7 +220,7 @@
   .lk:nth-child(3n+1){border-left:0}
   .lk:hover{background:rgba(93,255,143,.05)}
   .lk-k{font-size:10px;letter-spacing:.17em;text-transform:uppercase;color:var(--mid);margin-bottom:11px}
-  .lk-t{font-size:15px;letter-spacing:.13em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+  .lk-t{font-family:var(--disp);font-weight:700;font-size:14px;letter-spacing:.11em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
   .lk-d{font-size:11.5px;color:var(--mid);line-height:1.7}
 
   .foot{margin-top:56px;padding-top:26px;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(3,1fr);gap:30px}
@@ -253,8 +256,8 @@
   .art img{transition:border-color .25s,box-shadow .25s}
 
   /* ── orbit ── */
-  .orbit-wrap{display:flex;flex-direction:column;align-items:center;padding:34px 0 10px}
-  .orbit{position:relative;width:min(482px,88vw);aspect-ratio:1;display:grid;place-items:center}
+  .orbit-wrap{display:flex;flex-direction:column;align-items:center;padding:14px 0 6px}
+  .orbit{position:relative;width:min(392px,80vw);aspect-ratio:1;display:grid;place-items:center}
   .ring{
     position:absolute;border-radius:50%;border:1px solid rgba(93,255,143,.16);
     box-shadow:0 0 34px -12px rgba(93,255,143,.4),inset 0 0 34px -18px rgba(93,255,143,.4);
@@ -287,14 +290,51 @@
     50%{box-shadow:0 0 104px -12px rgba(93,255,143,.85),inset 0 0 58px -14px rgba(93,255,143,.7)}
   }
   .core-k{font-size:9.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--mid);margin-bottom:9px}
-  .core-v{font-size:clamp(22px,4.3vw,34px);line-height:1;color:var(--accent);text-shadow:0 0 26px rgba(93,255,143,.75)}
+  .core-v{font-family:var(--disp);font-weight:700;font-size:clamp(20px,3.8vw,31px);line-height:1;color:var(--accent);text-shadow:0 0 26px rgba(93,255,143,.75);letter-spacing:.01em}
   .core-s{font-size:10.5px;color:var(--mid);margin-top:9px;letter-spacing:.05em}
   .orbit-cap{
-    margin-top:22px;text-align:center;font-size:11px;letter-spacing:.17em;text-transform:uppercase;color:var(--mid);
+    margin-top:14px;text-align:center;font-size:11px;letter-spacing:.17em;text-transform:uppercase;color:var(--mid);
   }
   .orbit-cap b{color:var(--accent);font-weight:400}
   @media (max-width:560px){ .orb{width:42px;height:42px;margin:-21px 0 0 -21px} }
   @media (prefers-reduced-motion:reduce){ .spin,.core{animation:none} }
+
+  /* ── futuristic polish ── */
+  .cell,.block,.lk,.step,.art{transition:transform .28s cubic-bezier(.2,.8,.2,1),border-color .28s,box-shadow .28s,background .28s}
+  .cell:hover,.lk:hover{transform:translateY(-2px)}
+  .cell::before,.lk::before{
+    content:"";position:absolute;left:0;top:0;height:1px;width:0;
+    background:linear-gradient(90deg,transparent,var(--accent),transparent);
+    transition:width .45s cubic-bezier(.2,.8,.2,1);
+  }
+  .cell:hover::before,.lk:hover::before{width:100%}
+  .block-hd{position:relative}
+  .block:hover .block-t{color:var(--accent);transition:color .25s}
+  tbody tr{transition:background .18s}
+  tbody tr:hover td:first-child{color:var(--accent)}
+  .top-b a{position:relative}
+  .top-b a::before{
+    content:"";position:absolute;left:0;bottom:-5px;height:1px;width:0;background:var(--accent);
+    transition:width .3s cubic-bezier(.2,.8,.2,1);
+  }
+  .top-b a:hover::before,.top-b a.on::before{width:100%}
+  .bar i{position:relative;overflow:hidden}
+  .bar i::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);
+    transform:translateX(-100%);animation:barsheen 2.8s ease-in-out infinite;
+  }
+  @keyframes barsheen{0%,55%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
+  .core::before{
+    content:"";position:absolute;inset:-6%;border-radius:50%;
+    border:1px dashed rgba(93,255,143,.22);animation:spin 28s linear infinite;
+  }
+  .sec-k{position:relative}
+  .sec-k::after{
+    content:"";position:absolute;left:0;bottom:-1px;height:1px;width:56px;background:var(--accent);
+    box-shadow:0 0 10px rgba(93,255,143,.8);
+  }
+  @media (prefers-reduced-motion:reduce){.bar i::after,.core::before{animation:none}}
 
   .pend-hd{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);margin:18px 0 8px}
   .pend{display:flex;justify-content:space-between;gap:12px;padding:8px 10px;margin-bottom:6px;
@@ -333,8 +373,7 @@
 
 <div class="top">
   <div class="top-a">
-    <span class="mark" id="mark">KEYVAULT</span>
-    <span class="tagword">beta</span>
+    <span class="mark" id="mark">SNARKEY</span>
     <span class="spacer"></span>
     <button class="btn" id="wallet-btn" type="button"><span class="led off" id="led"></span><span id="wallet-lbl">Connect wallet</span></button>
   </div>
@@ -376,7 +415,7 @@
             </div>
           </div>
         </div>
-        <p class="orbit-cap">100% of fees &rarr; <b>buybacks</b> &rarr; more NFTs behind every key</p>
+        <p class="orbit-cap">100% of fees &rarr; <b>NFT acquisition</b></p>
       </div>
     </div>
 
@@ -497,12 +536,12 @@
   <!-- ══ COLLECTION ══ -->
   <div class="view" id="v-collection" hidden>
     <div class="page-hd">
-      <h2>zkSNARKs — live market</h2>
-      <p>10,000 shielded identities on Zcash. Every figure below is read from Zilkroad's public market API, the same feed that prices every key.</p>
+      <h2>Live market data</h2>
+      <p>10,000 shielded identities on Zcash, read live from Zilkroad’s public market API — the same feed that prices every key.</p>
     </div>
 
     <section style="margin-top:0">
-      <p class="sec-k">Market · <span id="c-at"></span> <span class="live" id="live">Snapshot</span></p>
+      <p class="sec-k">Price &amp; liquidity · <span id="c-at"></span> <span class="live" id="live">Snapshot</span></p>
       <div class="grid g4">
         <div class="cell"><div class="c-k">Current lowest<br>price zkSNARK</div><div class="c-v" id="c-floor"></div><div class="c-s" id="c-floor-s"></div></div>
         <div class="cell"><div class="c-k">Volume<br>(24 hours)</div><div class="c-v" id="c-vol"></div><div class="c-s" id="c-vol-s"></div></div>
@@ -519,11 +558,11 @@
     <section>
       <div class="cols2">
         <div class="block">
-          <div class="block-hd"><span class="block-t">Listing depth</span><span class="block-n">1,605 asks</span></div>
+          <div class="block-hd"><span class="block-t">Ask depth</span><span class="block-n">1,605 asks</span></div>
           <div class="block-bd"><div class="depth" id="c-depth"></div></div>
         </div>
         <div class="block">
-          <div class="block-hd"><span class="block-t">Cheapest asks</span><span class="block-n">Floor side</span></div>
+          <div class="block-hd"><span class="block-t">Best asks</span><span class="block-n">Floor side</span></div>
           <div class="scroll"><table>
             <thead><tr><th>Piece</th><th class="num">Ask</th><th class="num">USD</th><th class="num">vs floor</th></tr></thead>
             <tbody id="c-cheap"></tbody>
@@ -533,9 +572,9 @@
     </section>
 
     <section>
-      <p class="sec-k">Recent transactions</p>
+      <p class="sec-k">Order flow</p>
       <div class="block">
-        <div class="block-hd"><span class="block-t">Trade feed</span><span class="block-n">ASK = bought at listing · OFFER = bid accepted</span></div>
+        <div class="block-hd"><span class="block-t">Executed trades</span><span class="block-n">ASK = bought at listing · OFFER = bid accepted</span></div>
         <div class="scroll"><table>
           <thead><tr><th>Piece</th><th class="num">Price</th><th class="num">USD</th><th>Via</th><th class="num">Ago</th></tr></thead>
           <tbody id="c-feed"></tbody>
@@ -548,7 +587,7 @@
   <div class="view" id="v-vault" hidden>
     <div class="page-hd">
       <h2>The vault</h2>
-      <p>Five zkSNARKs, held at one shielded Zcash address. Below is what is in it, what it cost, and three independent ways to check that without taking our word for it.</p>
+      <p>Five zkSNARKs held at one shielded Zcash address. Piece numbers, acquisition prices and rarity ranks below; every figure is checkable against Zilkroad’s public record.</p>
     </div>
 
     <section style="margin-top:0">
@@ -571,41 +610,42 @@
     </section>
 
     <section>
-      <p class="sec-k">Verify it yourself</p>
-      <div class="steps">
-        <div class="step">
-          <div class="step-n">01</div><h3>Viewing key</h3>
-          <p>The vault's Zcash viewing key is published. It lets anyone read every note the address holds — and nothing else. It cannot move funds, ever.</p>
-        </div>
-        <div class="step">
-          <div class="step-n">02</div><h3>Piece numbers</h3>
-          <p>Every piece number is listed above. Check each one against Zilkroad's sales feed and you will find the purchase, at the price and time we state.</p>
-        </div>
-        <div class="step">
-          <div class="step-n">03</div><h3>Not for sale</h3>
-          <p>Query Zilkroad's listings for those numbers. If a vault piece ever appears as an active ask, something is wrong and you should act on it.</p>
-        </div>
-        <div class="step">
-          <div class="step-n">04</div><h3>Attestation</h3>
-          <p>A third party holding the viewing key signs a monthly statement of holdings. Published here, timestamped, with the previous months kept.</p>
-        </div>
+      <p class="sec-k">Provenance</p>
+      <div class="block">
+        <div class="block-hd"><span class="block-t">Acquisitions</span><span class="block-n">All five pieces</span></div>
+        <div class="scroll"><table>
+          <thead><tr><th>Piece</th><th class="num">Rank</th><th class="num">Paid</th><th class="num">USD now</th><th>Funded by</th><th>Status</th></tr></thead>
+          <tbody id="vl-rows"></tbody>
+        </table></div>
       </div>
     </section>
 
     <section>
-      <div class="block">
-        <div class="block-hd"><span class="block-t">Audit</span><span class="block-n">Read-only credentials</span></div>
-        <div class="block-bd">
-          <dl class="rows" style="padding:0">
-            <div class="row"><dt>Vault address</dt><dd>u1q9k…published on launch</dd></div>
-            <div class="row"><dt>Viewing key</dt><dd>zxviews1…published on launch</dd></div>
-            <div class="row"><dt>Last attestation</dt><dd>Pending — first one at launch + 30d</dd></div>
-            <div class="row"><dt>Pieces listed for sale</dt><dd class="up">0 of 5</dd></div>
-          </dl>
-          <p class="note">
-            A viewing key is read-only by construction. Publishing it gives up nothing except
-            privacy about what the vault holds — which is the entire point.
-          </p>
+      <p class="sec-k">Verification</p>
+      <div class="cols2">
+        <div class="block">
+          <div class="block-hd"><span class="block-t">Zcash vault</span><span class="block-n">Read-only credentials</span></div>
+          <div class="block-bd">
+            <dl class="rows" style="padding:0">
+              <div class="row"><dt>Shielded address</dt><dd>Published at launch</dd></div>
+              <div class="row"><dt>Viewing key</dt><dd>Published at launch</dd></div>
+              <div class="row"><dt>Pieces listed for sale</dt><dd class="up">0 of 5</dd></div>
+              <div class="row"><dt>Rarity source</dt><dd>Zilkroad rank index</dd></div>
+            </dl>
+            <p class="note">A Zcash viewing key reads an address without being able to spend from it, so the vault&rsquo;s contents can be enumerated directly on-chain.</p>
+          </div>
+        </div>
+        <div class="block">
+          <div class="block-hd"><span class="block-t">Payment rails</span><span class="block-n">Robinhood Chain &middot; 4663</span></div>
+          <div class="block-bd">
+            <dl class="rows" style="padding:0">
+              <div class="row"><dt>Vault wallet</dt><dd id="vl-wallet2">&mdash;</dd></div>
+              <div class="row"><dt>USDC</dt><dd>0x80e0&hellip;6cA8</dd></div>
+              <div class="row"><dt>Key ledger</dt><dd>On-chain transfer log</dd></div>
+              <div class="row"><dt>Keys issued</dt><dd id="vl-issued">&mdash;</dd></div>
+            </dl>
+            <p class="note">Every purchase and payout is a USDC transfer carrying its own key count, so balances are recomputed from chain state rather than stored.</p>
+          </div>
         </div>
       </div>
     </section>
@@ -682,38 +722,6 @@
       <div class="art-grid" id="k-art"></div>
     </section>
 
-    <section>
-      <p class="sec-k">Selling your keys</p>
-      <div class="steps" style="grid-template-columns:repeat(3,1fr)">
-        <div class="step">
-          <div class="step-n">Step 1</div><h3>Request a payout</h3>
-          <p>Enter how many keys. They are valued at the live floor, minus a 2% exit fee.
-             You see the exact USDC figure before you confirm.</p>
-        </div>
-        <div class="step">
-          <div class="step-n">Step 2</div><h3>It goes pending</h3>
-          <p>The request is logged against the wallet you connected and shows as pending
-             on this page. Your key balance comes down straight away.</p>
-        </div>
-        <div class="step">
-          <div class="step-n">Step 3</div><h3>We send the USDC</h3>
-          <p>Every payout is reviewed and sent by hand to the wallet that requested it.
-             Nothing is automated, and nothing moves without a person approving it.</p>
-        </div>
-      </div>
-      <div class="block" style="margin-top:18px">
-        <div class="block-hd"><span class="block-t">Payout capacity</span><span class="block-n">Published, not promised</span></div>
-        <div class="block-bd">
-          <div class="meter-t"><span>Payouts awaiting send</span><span><b id="fl-amt">$0</b> / <span id="fl-out">$0</span> key value outstanding</span></div>
-          <div class="bar"><i id="fl-bar" style="width:28%"></i></div>
-          <p class="note">
-            The float is what makes instant payouts possible, and it is the honest limit on them.
-            Anything larger queues behind an NFT sale. We publish the number because a promise of
-            instant liquidity is only worth the cash standing behind it.
-          </p>
-        </div>
-      </div>
-    </section>
   </div>
 
   <!-- ══ DOCS ══ -->
@@ -766,22 +774,7 @@
         <p>The responses carry <b>no Access-Control-Allow-Origin header</b>, so a browser on another domain cannot call them directly. A small server-side proxy that fetches, caches and re-serves with CORS enabled is required. Zilkroad sets <code>cache-control: max-age=15</code>, so a 15-second cache matches their own freshness. Note that <code>limit</code> is ignored on the listings endpoint — it returns all 1,605 rows every time.</p>
       </div>
 
-      <div class="doc">
-        <h3>What is not settled</h3>
-        <ul>
-          <li><b>Redemption delivery.</b> It is not confirmed whether a zkSNARK can be sent directly to an arbitrary shielded address, or only transferred by selling through a Zilkroad listing. If it is the latter, redemption needs a different mechanism. This is the biggest open question.</li>
-          <li><b>Custody.</b> Zcash has no smart contracts, so the vault is a shielded address under human control. The mitigation is the published viewing key.</li>
-          <li><b>Regulation.</b> Pooled USDC, managed acquisitions and a claim on held assets is a regulated product in most jurisdictions. This needs a legal opinion before launch.</li>
-          <li><b>Floor volatility.</b> The collection is days old. The floor moved from 1.89 ZEC to 0.90 ZEC inside one day, roughly −52%. Keys track that all the way down.</li>
-        </ul>
-      </div>
     </section>
-  </div>
-
-  <div class="foot">
-    <div><div class="foot-t">Prototype</div><p>Market figures are a real snapshot from Zilkroad's API. The vault, token, keys and positions are sample data. Nothing is wired to a chain.</p></div>
-    <div><div class="foot-t">Unresolved</div><p>Redemption depends on whether a zkSNARK can be sent directly to a shielded address. Confirm with Zilkroad before building the backend.</p></div>
-    <div><div class="foot-t">Before taking money</div><p>Pooled USDC, managed acquisitions and a claim on held assets is a regulated product in most jurisdictions. Get an opinion first.</p></div>
   </div>
 
 </div>
@@ -792,8 +785,8 @@
 (function () {
   "use strict";
 
-  var NAME = "ZKEYSNARKS";                 /* project name — rendered as the block banner */
-  var HL = [1, 3];                         /* highlight "KEY" (chars 1–3) in the theme colour */
+  var NAME = "SNARKEY";                    /* project name — rendered as the block banner */
+  var HL = [4, 6];                         /* highlight "KEY" in the theme colour */
   var TICKER = "ZKEY";
   var CHAIN = { id: "0x1237", n: 4663, name: "Robinhood Chain" };
 
@@ -828,14 +821,20 @@
     [7866,.99,"a",9],[5153,.9,"a",9],[4231,.899,"a",11],[1351,1,"a",11],[6691,.99,"a",11],
     [4590,1.33,"a",11],[3405,.979,"a",11],[2509,1.2,"a",11],[7187,1.3,"a",11]];
   var ART = {
-    6849:"iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAB/klEQVR4AeyTzSulURjAn2ZqakzXdDM1aqZmamZqJMrGxsLKUrG0sVAWYmFn6R+woxQrUmQlVlKsJFYSRdnId7FAUSLu79Tz9pxz3vfme6Xu7z3P+XjO7z7Pe+8HEbl7CxAVPK//eRc9uccPat3gl2aBJ1sKiami8dYGaa+tlJE/bY6anxUCd9/6pRiF+zI/qaKW0TkZXtmIkpbLDqM1u8CXsHMbeyKthAPEjC+FJ9JKkJyeX8pF1ZbzbN0cuZHH/u2JFGMv38uxCE+kuwi7phYFPtXtCujex/Kcho8aPRGVkM040FQnQGWQ674WKBkql9z0v6JwR4gnohIOMJaVlhC+GJ7I3oqM1iEEu0dc+n9GgBiIgTiNSMT/Rw/SQmJax/gcIhH/HwT2/XT2LEaO881GAd0gBp2HYyLicq1G26atmxhsCPMePU9EXE414Q2s27W99VU7jeKs/UQUZlAhaAsXZpfCI6nzyo6+1PVMEZWAtm//7EpUxrcGeyNzsGs2jkRUoe+Kg8zXdk8JBdnY5HwkVEFWNSRHIqrgXSEAfto/vn7mbIIKkVpoc3IoCCKR7iPM53Py99d3t4RMcQvmYdezZJ6ICjiobO8cu+uQWeqrf4vF7hG7pODhiahCXz4JgEwJcqOpnuOLhpueiE2qmt88IHQgU/SirNElZDzuAQAA///xOOFXAAAABklEQVQDAKutPOwn5+z1AAAAAElFTkSuQmCC",
-    361:"iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAC+ElEQVR4AexUu24TQRQ96yT2IiUFkgVSZImXGwSJsIj7dOYDEiUF6VKHhvwAlKGgokYyBQg+gJTUSRpoEDaPxoliJJQQB/zMcs7MrtnxSxABFbt7Zu7cuXPP3Dt3JwEg+BcQEXn+/vef6NQ5/qXUpacfQTg1CxcOJFrJX0Fh5hKu5x4bZDKzEC5c/Y5RwIhnIFFx6z0233zsW3Z2aqdPF1doE/FxXHaIbCQXzfxtRmWEP9Q4RDaSTxBh+yTAtcQ9Q9NulU2vptOqYBQy2Z+2so/gEEVKET7d+YBnRG78PoRo7vy58Uj8rd4hUiRarX7p5mUITUYmzJ9Zxby/iqXpBazdWMZajlAf4k6sl49eOESKRAbqkwkPHgcCKAUBr0Q74Aj2htRY4NAqKXiRgnLsc4hieohM6ZsgYZJWnicHQdff+ottrD/fhhfYVXcpSwdtyKqcli6cMW7N2qqTVimUZ6UuuuMD8gmaF8RDlUSD+JxRhE0f0cvXtuqWeUYtnU8ntJQ3RmUioPeNxTkIZpZzGwtzeLCYtyk1SrfpEmn3hTCaKG1KndKWZPqcZXQsQgEkJ686mgRhT7Hn6xLJ+Saj6Zk3Z2V0zH1AofK5ZnYtWTBnIsHAQ6XKedr1fl2i3glFuJLPdkt877hlD14OGREELgo7gJHJ4OGrtxj0DCVShMWtsvlplboaz2rvuAk5292vQZBzHb44KtWjodGATx+R7rjCjFt5X5onNA1Q6wR4d9BC9RsJqansH2FXBCTmEMOi0Vwf0RNzc6vysubOU2lPjjNBShnhsc4P2wFKhw2UidJBE6WvBGXdJHI6CH1EkZHSpmLzx2TiQWSTE+o5jvJFftlPjQGTY3YwjIyrZGqhApBhhDpTpRLz6cinI5/MPuV0ykM6KSSQTiWQ5FyK8ENYb27rEBWZNt3YOvxoUZ0/bYOEImXmmDjXAeDxhXkatJWdNmoUscYhkl5RVessMQ3oIsUozG55Tg2qmyJlbcQ3IOfaDH81s2pQ8wMAAP//0SVMagAAAAZJREFUAwA6vmJ3f55NCwAAAABJRU5ErkJggg==",
-    1986:"iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAACR0lEQVR4AeyTu2tUQRTGD1ZJNg/WFGHxEUELIRi0MBZb2JhYCWKXRhCiIFoK+QssREshhVYSUCzEShAlFrIE0yhRIYUWwQdYRDGFlnp/I99wZuZe8IFWwv3mPGbO/O45d3eLmX37FwJUcf7+8x/02zP+6dG1BodNGuvssCY1vUkt6ObJaTs9NRFrACgYHBqx1ae9KPLEsrwAfq5a0OyNB3Zt5aUB9BAVTx7oGlKMFQy/TgmIi9UJPgXXTxyyS0f24UZxKcpheRwLKicB+U42Nr8YmrvzxOYfPq+Olg8wZYH4WHnZBKQkwPN3e4boCGmvb6BlU90ZO3psNkixbGf7Ttt/sGvju/eqJNgEpHFhrx7vGlJXK5fPGApV1fLp40a1mrW3jiYiqT0PS0B0wkHs6PAAbpD/RssLF0y6d/GU1Wn99ZpJ4YJqSUBVHB9gjA4g0karv89QZ2bOED7CR/g6620B0q+OQ4wQy/iwf6ICpP+Pvg+Qc/O9grH5eNGQNvCR4txGEG+vbjQ2je7WwnRe98txBHE53eQ3kPe5ty+e+bDwm/YjKK+gQ6QRPrq/nB+pjSfOXqnNN4LoBGl87z5/NcF4a+RvJEY+5/0CRBf6VhwkXn3z488JbPH2UgEUoKkb7ilAdMG3AoD41W0b6edslIBAvRhzPJQ5BUj7ANvtIdszPhZSwKSQcIvPN8ESEB1wUHq1/iFcB8zr8OQu8/J7+KEoWxIQXejjU4CASVltEeocL5pvJiA26Wpp7T1uEDBJFzXZUNCwfAcAAP//xfDXegAAAAZJREFUAwBask/sClVTTwAAAABJRU5ErkJggg==",
-    2328:"iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAADOElEQVR4AexVy0tUURj/FYSW0KLapaJloeTbJJWQFlKLiFxFm8iyTC3ymZoGtqhNG/+BoG2LiKBVVuQLRymf4TPJeVkG2iIqvefeO9P5HZ3Lvc6MhFBtgvmd73m/3/3OnO/c7QCCfwMkkjx//vefaMt7/G+37qPXCyL0+hOzs3g7OorewUEUFhZERSg/kozY0YHERBBzHg8mZmawsrICTQg01dZYNZaWlmEHA3wJykhwELn9fsz7fCqPHWmahlUJSiF05edCAko76CPsPrvuIEqKj0dyQgJIKHQdmiZUJ9TbbjWo5zYrxoRoXTmImEiQMPXgQeRmpMMwDNi7YXwrcBDN+7yqxgf3PMYmJ+EaGlJEgYCp/L+zROvYQZSckKhqHUpKBrdLl/+LLreQeunCNxBXtB14FNy1KfpSslQd++Igsgfys7JQLI+yaZoQ8sTZY9TPf13G0x/fQRnJps+OMCLOTCihs6sLum6o7Xu2f3fIbcnFJ+mWTmWjTV8IYURHDh9Ww9nV3w9dHgTd0BUZH7CTPd6zF9UX3aBkjNJu02eHReT2+/B+elrF8rOzcaKoCKdLShAwAzBNQ/m5PIzRcWnbz01xfG6MqQ5YREnxCchITXUEaZwrPYvY2FiqCvv27VUy2hItbhFtfJBH+1VPD56/6ERcXBwa2+5sTIlou1wDEf1RiQrz8lBSXIwzp05iZ0wMmuvqUNvUoorwrQllrC+0iXUzTIQRTc3N4d34uJX4urcPVRUVCAaDaGmox+fFL/IyXVJxFg6BjmjdMBZGlJaSgqOZmRgYHgZPnhAaHnR0IBAIKjISrspB9i18gte/AI/XD7fHh3mPF/W321gzIsKIQlkFubnQVjU1rLy92+/fQ2v7XTS2tlmEJJX0KJMdX7hcLv0B3GxqDpVwSAfR+NQUBkdG0O1y4WV3DzRdqBky1od2baYEbtTVo7qmFlerr6O8skoOtCk7DsgxMKFHuEXI6CDKTEvDsZwc8H7TtFUIfibk92jN1qBJXchtM3j/yYL0CyXFekzIHdBRdq2StR1wEDHypq9PEakisiN+JqjrwgA7M+VtwUvW8ktSxmkLvgTjUrKWHb8AAAD//6ySksAAAAAGSURBVAMA/5kBiGDd1LMAAAAASUVORK5CYII=",
-    3026:"iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAADYUlEQVR4AexUW29MURT+9plpy7iVRme8IkKCqbomxF1H/AISl7TqgfAftCQur30gUW20DR7Eo0QHiYTEJeglTURoBElnhtJWVaTtHOtbZ2a6p2fqQYIXM/s7a+1vr7O+vfbZezsA3L8BConOn2//hX57jf/t0iUqLiG1vS03+0RlIxKrLyv6ll2EYukF9BFLxGa43AsFnIIVRTqOoPzeflAgua4JpigAE3Tgjox6KVwX3f296Pz0Bl1fetEtFsJxAl6A/5knlFjVmKuEPsPdcR4z8YyATRJ2iYgr1ut64+S6KEiyAPKEIi9qvUpE0BQ5WoVWMjqO9NAPOdoumJAiXnogzb+IkvtVVU4BcVAw/KQGhCsiMFJOWlJLs+NduVQcWCkYZwdYvhUFcBNwjMuWXN8MwvD7SHXkFTJ7VkERAyNSLmtSy/Gpli9PiJuAwaxIK5GkkosUWkYa0PK9AR2hW5hdehezSu9gZmlcbbY/Y047iAeLo/qO/cgTsgciz2szS5cGxiatmQTu/dyPm9+GQStdtXafnA2f0OTzoxUFDQ6GTtjvqZ+4sVxt9jG5n+VpfUK+8xOYCDlYcpzvKK7PK8OxQ29BS4LW7pOzkcvCjZCtJrts4cfVcMfSCn3JMYiO7MHwwC4MDexQDIr9OrBTOdqRwSpset2p4fYjJ8SNwGrsQfqRZ4chW4quIjpvkVruOG7tgGxv+iRpV5QtpOuD42MyBK8f3m+6xYsDcEqnQb+Xgf6MdFxrBkZYYwwWvDwqnr85fspjuHysRpdPDm1VTz2cudN1kFURRsSMMMYYrCxbJChcjYRI3XxaSK5twsfYtRzDimKvTkNyoqqnDrv7zsMpD8HIIa6ILEGUKF8MXlVTVQP5+SoKP63B/Nv7kNzQrECxg3hFnYRK86aPqu46xN6fFZxB7J2A/odzSG1ukaDCzSeUDQs/qgZkSfSwio1X1iNeeQrxVVlRVdWY+JoML0chtbUVhX55QsmNV5Da0pqDKQkAcljd8TQUY+Nq49GTaM+APngEcjFykxRQcmwu/PAQyu8fmKDk5jHTi2BCAlqZsQmKuGNg6AuQAXkzLaixqdjViRwZL0+IXGpbG5z5IUCSKUZlhjJjyIxNSRD8ZppQqmXFpjgAtewHjKy2B+ay8RMAAP//Vb7FoQAAAAZJREFUAwANBHZNMgn4MgAAAABJRU5ErkJggg=="
+    4580:"iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAB4UlEQVR42u2VsW7CMBCG8xwtjQolXcnQUrUDSHRCQSCBiugAQyUiWGAM71L8LrwCe5+iYxf3zvb5nCDSEKRODKdzQuIv/3/nw/M8T/5TXEAXUA5oWI/ly1XXuZ7LEcQ4WMrJfWLjXeUN5I3KpRUhIKrOZM/ExGyIkHUoILZy3cAQ9rdCIKXkumshpAQhkQHh19PmKkJer2B9onVzq6JXncpxfeko2Wo1FmZUhTrwmVLNoJQFccYyAwgFw0KysAAIbaIcgRKyDNdUA/3ln2nrnFqtj9t3TEns2DdjRY5N+8dXR81WPiU7lUtZN1INEduWJiX7hw6AOtY6hGiQKAY6PD9xWhHUBZX4flX+fH9ZRb5/q66bADut62rcdbhm67jjUBXXScjmZvd3jbLTIKsq3QwiHQBeNbjtS8+6YZ3b262T22l0nnKmQ875cS1U9iWsylFgp0Mozpve2Hntm4EC0iBN1Ss0sy5IioNwU5p3ZFu70gdQX+fKQA7uPlJTfHLO9NbWxda6FgAUDJS1IAiO91XAGp8rZd1bsIBY2lFEGVXpQFCfj4F5psDfxPzgJQSNbSwMfGHuc3Z/K6wI60QvkXVRbepANICzXke1WZ6qLCSWz9AMvBF/tWshtbzb/r0c0C9vu8A4quosIQAAAABJRU5ErkJggg==",
+    4756:"iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAByUlEQVR42u2VMW6DQBBFOQPbQAON3eDCru0DmNY04Qj4KOFquUBu4DJtpMja7J/ZgQEBWoiUysVovZa9b+fPzN8oiiL7T/ECvUALoOzS2Hh37fb5+W6zc2Nz931xe6c4YK14pXCfN2eUXe42Pb7ZxAVWPrSlFRfhKK1xqwCDQMjE+ExyB8EeMAEVBGmt2TOgh13pf0apECwdH14TADCWp+2y6GMIWpBwuYiclauNg6AmWrJxVojiFgDKXNFZtoaySU4uq5PUpyWY8YcbFTqreF6++UwEghWSFCLdfngwf+4vsEm63EsnHWe8bB+fDwpA8Z3sg0E6dTQB5oekqxgkGTy+vu3P03byyX6VdDQ/Ti7UKPFzhI6T+TFKvniiTosg3HzqNtlIung3D/hTjaROIp3AjG8AM5ijkhpmXdd5b0u0BUG+qm+IOLy1wzJCzXAIZksMtFD1Yq9rw71uyrkBGQ8n+V7Vu/bBO/om99atjQ40nVTlAKrrBIm3PRNdnerOJdDy47qkyoDTUx32TOCHqcyPWwGDBwKY+2dD3EL2ErlXYdUzIQdLx/Fz0QyAmbxZkrka8qBmgCT85+HtKVsFltc3OfYuL/vxub8nZ3S1M51x2AAAAABJRU5ErkJggg==",
+    4854:"iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAB9klEQVR42u2VuW7CQBCG/UBxCkwNoqCyJQh96KlsBclQ2qHApIk4HoIokTBSWmiTlDFS+vhFNjuzh9fYHDYSVYpfe9ieb//Z2bWmaRq5kv5BVwB1b0aoB2OB6qttdX45qKtTgP6IEAjar7LgAvTceqN6pf15MdDE90ijVlMgTGL1eQIQqJSjie+TgeOgk3t9lAkODvZTCDoJeqKBG/U663s+gtAN35tDbhiEQ6uLIqmjTmwH3YCatz3SqbjkrjJAdZS2YyTz6vNCqWvqPSkMymHQSphBW0MBUTDAT6ZOFINwg7Jt8r58oVqSn48vRZ97YzZXqBhgjwTIpWnchGuyDUPy+x1R7Y4oKneOAAhOAbRRQOK5ACTjM0Gi6iTEY2kEN/ugOI5TIDE+v+oowFX3yHEQAq5EerIpjDLuckFQ0o1aPQfqITgNOgTbFXOUd64EaJuCZQXvFQJBcKw8PLg2S99K7JOaqijl8KLbG4Aty+JFsebuQhLL9EVy7mwQ3txq5dExQFqmSWWhvOFQnisB2K7Ccv8jODvqDYEQK4FhH2WRtskWAu+VSt1sHJBpEKQuWFBbAk2ZUpfrCCzn2rETCRi2VLOAaRoo89gfy2eFfhNT/pFr29KJCCThAsgXIReY7yoLgWKYwQrH6dUnt7mTCqqm9lD6/gD2X5W9xHmsAQAAAABJRU5ErkJggg==",
+    7534:"iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAABWklEQVR42u2VO07DQBCG9wDcBExhWzRUFK4B93FHkSoSQSBacgAixRINZSQKOACipUSUXIE+JQVadsaeMAyD9pEoFcWn9SOZL/941jHGGLsh/kUbEDU7E+S0aJExX8vZ6qImc4LsCiVQdFx2xUl0ffjguHfHszjRXVPZk71tJumgX68BIiApEQjbo31MMsgmv4pDAtlCwCviSeAYwDT9s/krTSfppWUb1zpIQlS7Q1vn5/Y4v0BqttbF93V+P6p1VTZcgkV7GaxLWeHWgomcGOTe1mmJgJfpCHl/uvUSNQxS9nZzhiye516S9hENhRSZ1w9EOw8S0dRxiZZoa2Ft+2nV8+SpW2vr+B4Kad3anxHJSOSTwf3oqUuZvJXe3iC8PMh/yKSQrgWL5LMiCUcKAyThrZMyDfhcUuseRzUiR10TcIL+JuSXSBZD1IbV0vgEnlT6MPgK+ZB1vwA75Hg5LEQSdAAAAABJRU5ErkJggg==",
+    1010:"iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAABHUlEQVR42mNgYGD4Tyc8ahEdLOLmFQBjBSW1/zJySmAahkF8ii2CWQCzBB27egWBMYhNkkXL41z/p5ppY7UE3SfolpHlI5CFUwKsibIIGRO0CNknIDYIEwo2sixC9wkMs7Jz/hcSkfjPyy8EponBJAUdyAIYhhlArGUEgw6bj0D49IR8MH62aw5BTFJiQLfs6vQSMP54eAlBTFY+giUKdItg8tj4RFkES3XIlmDzEcUW4YojqgUdch4iJuioHkcwy2AWEbIMJE9yqiMn5VFUeoMsrHQ0QrEM3UKYGNEWoccVzBJkjG4hEZYQH3TolmHDIHVkBd2O/CAwRk/q2CxAxkRVE+iaYJaRgknKsNh8Q8gCAr7CnhgIGUQIo5sLAE9yJL4MA41TAAAAAElFTkSuQmCC"
   };
-  var VAULT = [{id:6849,cost:.95,src:"k"},{id:361,cost:1,src:"f"},{id:1986,cost:.9,src:"k"},
-               {id:2328,cost:1.12,src:"k"},{id:3026,cost:1.05,src:"f"}];
+;
+var VAULT = [
+    { id: 4580, cost: 0.67, rank: 9945, src: "k" },
+    { id: 4756, cost: 0.62222, rank: 9886, src: "f" },
+    { id: 4854, cost: 0.7, rank: 9872, src: "k" },
+    { id: 7534, cost: 0.647, rank: 9834, src: "k" },
+    { id: 1010, cost: 0.7, rank: 9787, src: "f" },
+  ];
 
   var S = { per: 100, nfts: 5, sold: 318, mine: 0, avg: 0, addr: null };
 
@@ -991,7 +990,8 @@
     return VAULT.map(function (v) {
       return '<div class="art"><img src="data:image/png;base64,' + ART[v.id] +
         '" alt="zkSNARKs #' + v.id + '" width="26" height="26">' +
-        '<div class="art-id">#' + v.id + '</div><div class="art-s">' + v.cost.toFixed(2) + ' ZEC</div>' +
+        '<div class="art-id">#' + v.id + '</div><div class="art-s">' + v.cost.toFixed(2) +
+        ' ZEC · rank ' + num(v.rank) + '</div>' +
         '<span class="chip ' + (v.src === "k" ? 'chip-k">Key sales' : 'chip-f">Token fees') +
         '</span></div>';
     }).join("");
@@ -1074,6 +1074,18 @@
     $("fl-amt").textContent = usd(pendingTotal(), 0);
     $("fl-out").textContent = usd(outstanding, 0);
     $("fl-bar").style.width = Math.min(100, outstanding ? pendingTotal() / outstanding * 100 : 0).toFixed(1) + "%";
+
+    var rowsHtml = VAULT.map(function (v) {
+      return '<tr><td class="t-id">#' + v.id + '</td><td class="num">' + num(v.rank) +
+        '</td><td class="num t-v">' + v.cost.toFixed(3) + ' ZEC</td><td class="num">' +
+        usd(v.cost * MKT.zecUsd, 0) + '</td><td>' +
+        (v.src === "k" ? '<span style="color:var(--accent)">Key sales</span>'
+                       : '<span style="color:var(--amber)">Token fees</span>') +
+        '</td><td class="up">Held</td></tr>';
+    }).join("");
+    if ($("vl-rows")) $("vl-rows").innerHTML = rowsHtml;
+    if ($("vl-wallet2")) $("vl-wallet2").textContent = VAULT_WALLET.slice(0,6) + "…" + VAULT_WALLET.slice(-4);
+    if ($("vl-issued")) $("vl-issued").textContent = num(S.sold) + " of " + num(cap());
 
     $("o-art").innerHTML = art;
     $("vl-art").innerHTML = art;
