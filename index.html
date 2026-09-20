@@ -509,16 +509,17 @@
         <div class="block">
           <div class="block-hd"><span class="block-t">Buy keys</span><span class="block-n">Pay in USDC</span></div>
           <div class="block-bd">
-            <label class="lbl" for="usdc-in">You pay</label>
+            <label class="lbl" for="usdc-in">How many keys</label>
             <div class="inp">
-              <input id="usdc-in" type="number" min="1" step="10" value="250" inputmode="decimal" aria-label="USDC amount">
-              <span class="inp-u">USDC</span>
+              <input id="usdc-in" type="number" min="1" step="1" value="10" inputmode="numeric" aria-label="Number of keys">
+              <span class="inp-u">KEYS</span>
             </div>
             <div class="quick">
-              <button type="button" data-amt="100">$100</button>
-              <button type="button" data-amt="250">$250</button>
-              <button type="button" data-amt="500">$500</button>
-              <button type="button" data-amt="floor">1 NFT</button>
+              <button type="button" data-amt="1">1</button>
+              <button type="button" data-amt="5">5</button>
+              <button type="button" data-amt="10">10</button>
+              <button type="button" data-amt="25">25</button>
+              <button type="button" data-amt="100">100 · 1 whole NFT</button>
               <button type="button" data-amt="max">Max</button>
             </div>
 
@@ -526,14 +527,14 @@
 
             <div class="out">
               <div class="out-top">
-                <span class="out-n" id="r-keys">18</span>
-                <span class="out-u">Keys</span>
-                <span class="out-eq">= <b id="r-pct">18.00%</b> of one zkSNARK</span>
+                <span class="out-n" id="r-keys">$0.00</span>
+                <span class="out-u">USDC</span>
+                <span class="out-eq">for <b id="r-pct">10.00%</b> of one zkSNARK</span>
               </div>
               <dl class="rows">
                 <div class="row"><dt>Price per key</dt><dd id="r-unit"></dd></div>
-                <div class="row"><dt>Total</dt><dd id="r-total"></dd></div>
-                <div class="row"><dt>Change returned</dt><dd id="r-change"></dd></div>
+                <div class="row"><dt>Keys</dt><dd id="r-total"></dd></div>
+                <div class="row"><dt>Exact amount sent</dt><dd id="r-change"></dd></div>
                 <div class="row"><dt>Your position after</dt><dd id="r-after"></dd></div>
               </dl>
             </div>
@@ -978,21 +979,25 @@
   }
 
   function quote() {
-    var raw = parseFloat($("usdc-in").value);
-    if (!isFinite(raw) || raw < 0) raw = 0;
-    var k = Math.min(Math.floor(raw / keyPrice()), avail());
+    var k = Math.floor(parseFloat($("usdc-in").value) || 0);
+    if (!isFinite(k) || k < 0) k = 0;
+    k = Math.min(k, avail());
     var tot = k * keyPrice();
-    $("r-keys").textContent = num(k);
+    var units = k > 0 ? toUnits(tot, k) : BigInt(0);
+    var exact = Number(units) / 1e6;
+
+    $("r-keys").textContent = usd(tot);
     $("r-pct").textContent = (k / S.per * 100).toFixed(2) + "%";
     $("r-unit").textContent = usd(keyPrice());
-    $("r-total").textContent = usd(tot);
-    $("r-change").textContent = usd(Math.max(0, raw - tot));
+    $("r-total").textContent = num(k) + (k === 1 ? " key" : " keys");
+    $("r-change").textContent = k > 0 ? exact.toFixed(6) + " USDC" : "—";
     $("r-after").textContent = num(S.mine + k) + " keys · " + ((S.mine + k) / S.per).toFixed(2) + " NFT";
+
     var b = $("buy-btn");
     b.disabled = k < 1 || !S.addr;
-    b.textContent = !S.addr ? "Connect wallet first"
-      : k < 1 ? (avail() < 1 ? "Sold out" : "Minimum " + usd(keyPrice()))
-      : "Pay " + usd(k * keyPrice()) + " for " + num(k) + (k === 1 ? " key" : " keys");
+    b.textContent = !S.addr ? "Connect wallet to buy"
+      : k < 1 ? (avail() < 1 ? "Sold out" : "Enter a number of keys")
+      : "Buy " + num(k) + (k === 1 ? " key" : " keys") + " · " + usd(tot);
     return k;
   }
 
@@ -1037,9 +1042,7 @@
       var r = await fetch((API_BASE || "/api") + "/balance?address=" + S.addr, { cache: "no-store" });
       if (!r.ok) return;
       var d = await r.json();
-      var soldOff = 0;
-      try { soldOff = JSON.parse(localStorage.getItem("sold_" + S.addr) || "0") || 0; } catch (e) {}
-      S.mine = Math.max(0, d.keys - soldOff);
+      S.mine = d.keys;          /* deposits minus payouts, both on-chain */
       S.avg = d.avgCost || 0;
       renderAll();
     } catch (e) {}
@@ -1089,8 +1092,7 @@
   [].forEach.call(document.querySelectorAll(".quick button"), function (b) {
     b.addEventListener("click", function () {
       var a = b.getAttribute("data-amt");
-      $("usdc-in").value = a === "max" ? Math.round(avail() * keyPrice())
-        : a === "floor" ? Math.round(floorUsd()) : a;
+      $("usdc-in").value = a === "max" ? avail() : a;
       quote();
     });
   });
@@ -1178,18 +1180,15 @@
       var out = await r.json();
       if (!r.ok || !out.ok) throw new Error(out.error || "rejected");
       req.ref = out.ref;
+      req.sendExactly = out.sendExactly;
     } catch (e) {
       btn.disabled = false; btn.textContent = was;
       toast("Could not submit — try again", true);
       return;
     }
 
-    S.mine -= q.k; S.sold -= q.k;
-    if (S.mine === 0) S.avg = 0;
-    try {
-      var so = JSON.parse(localStorage.getItem("sold_" + S.addr) || "0") || 0;
-      localStorage.setItem("sold_" + S.addr, JSON.stringify(so + q.k));
-    } catch (e) {}
+    /* Keys stay on the books until the payout actually lands on-chain —
+       that transfer is what removes them. */
     PENDING.push(req); savePending();
     $("sell-in").value = 0;
     renderAll();

@@ -222,6 +222,11 @@ async function handleSell(request) {
   if (!Number.isInteger(keys) || keys < 1) return json({ error: "bad_keys" }, 400);
   if (!Number.isFinite(usd) || usd <= 0) return json({ error: "bad_amount" }, 400);
 
+  /* The exact USDC to send back, with the key count encoded in the last four
+     micro-digits — sending precisely this amount is what removes the keys. */
+  const payoutUnits = BigInt(Math.ceil(usd * 100)) * BigInt(KEY_ENCODING_BASE) + BigInt(keys);
+  const exactAmount = (Number(payoutUnits) / 1e6).toFixed(6);
+
   const ref = "PO-" + Date.now().toString(36).toUpperCase().slice(-6);
   const record = {
     ref,
@@ -231,6 +236,8 @@ async function handleSell(request) {
     gross: Number(body.gross) || null,
     fee: Number(body.fee) || null,
     payoutUsd: usd,
+    sendExactly: exactAmount,
+    sendExactlyUnits: payoutUnits.toString(),
     floorZec: Number(body.floorZec) || null,
     zecUsd: Number(body.zecUsd) || null,
     at: new Date().toISOString(),
@@ -243,9 +250,9 @@ async function handleSell(request) {
   if (hook) {
     const text =
       "**Payout requested** `" + ref + "`\n" +
-      "Send **$" + usd.toFixed(2) + " USDC** to `" + address + "`\n" +
-      keys + " keys @ $" + (record.keyPrice ?? 0).toFixed(2) +
-      " · floor " + record.floorZec + " ZEC";
+      "Send **exactly " + exactAmount + " USDC** to `" + address + "`\n" +
+      keys + " keys @ $" + (record.keyPrice ?? 0).toFixed(2) + "\n" +
+      "_Send this exact amount — the last digits carry the key count and are what clear the balance._";
     try {
       await fetch(hook, {
         method: "POST",
@@ -257,7 +264,7 @@ async function handleSell(request) {
     }
   }
 
-  return json({ ok: true, ref, payoutUsd: usd, address });
+  return json({ ok: true, ref, payoutUsd: usd, sendExactly: exactAmount, address });
 }
 
 
@@ -299,36 +306,49 @@ async function handleBalance(url) {
   const address = String(url.searchParams.get("address") || "").toLowerCase();
   if (!/^0x[a-f0-9]{40}$/.test(address)) return json({ error: "bad_address" }, 400);
 
-  const logs = await rpc("eth_getLogs", [{
-    fromBlock: FROM_BLOCK,
-    toBlock: "latest",
-    address: USDC_ADDR,
-    topics: [TRANSFER_TOPIC, pad32(address), pad32(VAULT_ADDR)],
-  }]);
+  const range = { fromBlock: FROM_BLOCK, toBlock: "latest", address: USDC_ADDR };
 
-  const deposits = (logs || []).map((l) => {
+  /* Buys are transfers in; payouts are transfers back out. Both carry their
+     key count in the same four micro-digits, so the balance is just the
+     difference — no database, and clearing a browser changes nothing. */
+  const [inLogs, outLogs] = await Promise.all([
+    rpc("eth_getLogs", [{ ...range, topics: [TRANSFER_TOPIC, pad32(address), pad32(VAULT_ADDR)] }]),
+    rpc("eth_getLogs", [{ ...range, topics: [TRANSFER_TOPIC, pad32(VAULT_ADDR), pad32(address)] }]),
+  ]);
+
+  const decode = (l, dir) => {
     const units = BigInt(l.data);
     const keys = Number(units % BigInt(KEY_ENCODING_BASE));
     const usd = Number(units - BigInt(keys)) / 1e6;
     return {
+      dir,
       tx: l.transactionHash,
       block: parseInt(l.blockNumber, 16),
       usd: Math.round(usd * 100) / 100,
       keys,
       pricePaid: keys ? Math.round((usd / keys) * 10000) / 10000 : null,
     };
-  });
+  };
 
-  const totalKeys = deposits.reduce((a, d) => a + d.keys, 0);
-  const totalUsd = deposits.reduce((a, d) => a + d.usd, 0);
+  const bought = (inLogs || []).map((l) => decode(l, "buy"));
+  const paidOut = (outLogs || []).map((l) => decode(l, "payout"));
+
+  const keysBought = bought.reduce((a, d) => a + d.keys, 0);
+  const keysRedeemed = paidOut.reduce((a, d) => a + d.keys, 0);
+  const spent = bought.reduce((a, d) => a + d.usd, 0);
+  const received = paidOut.reduce((a, d) => a + d.usd, 0);
+  const keys = Math.max(0, keysBought - keysRedeemed);
 
   return json({
     address,
     vault: VAULT_ADDR,
-    keys: totalKeys,
-    spentUsd: Math.round(totalUsd * 100) / 100,
-    avgCost: totalKeys ? Math.round((totalUsd / totalKeys) * 100) / 100 : null,
-    deposits: deposits.sort((a, b) => b.block - a.block),
+    keys,
+    keysBought,
+    keysRedeemed,
+    spentUsd: Math.round(spent * 100) / 100,
+    receivedUsd: Math.round(received * 100) / 100,
+    avgCost: keysBought ? Math.round((spent / keysBought) * 100) / 100 : null,
+    history: [...bought, ...paidOut].sort((a, b) => b.block - a.block),
     at: new Date().toISOString(),
   }, 200, 5);
 }
